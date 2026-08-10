@@ -4,26 +4,41 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import SiteHeader from "../../components/SiteHeader";
 import SiteFooter from "../../components/SiteFooter";
-import { CASE_STUDIES } from "../data";
+import { CASE_STUDIES as FALLBACK_CASE_STUDIES, type CaseStudy } from "../data";
+import { sanityFetch } from "../../../sanity/lib/client";
+import { imageUrl } from "../../../sanity/lib/image";
+import { caseStudiesFullQuery } from "../../../sanity/lib/queries";
+import type { SanityImageSource } from "@sanity/image-url";
 
-export function generateStaticParams() {
-  return CASE_STUDIES.map((cs) => ({ slug: cs.slug }));
+type SanityCaseStudy = Omit<CaseStudy, "image"> & { image?: SanityImageSource };
+
+async function getCaseStudies(): Promise<(CaseStudy | SanityCaseStudy)[]> {
+  const fetched = await sanityFetch<SanityCaseStudy[]>(caseStudiesFullQuery);
+  return fetched && fetched.length > 0 ? fetched : FALLBACK_CASE_STUDIES;
+}
+
+export async function generateStaticParams() {
+  const caseStudies = await getCaseStudies();
+  return caseStudies.map((cs) => ({ slug: cs.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const cs = CASE_STUDIES.find((c) => c.slug === slug);
+  const caseStudies = await getCaseStudies();
+  const cs = caseStudies.find((c) => c.slug === slug);
   if (!cs) return {};
   return { title: `${cs.client} — NIVO Case Studies`, description: cs.summary };
 }
 
 export default async function CaseStudyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const index = CASE_STUDIES.findIndex((c) => c.slug === slug);
+  const caseStudies = await getCaseStudies();
+  const index = caseStudies.findIndex((c) => c.slug === slug);
   if (index === -1) notFound();
 
-  const cs = CASE_STUDIES[index];
-  const next = CASE_STUDIES[(index + 1) % CASE_STUDIES.length];
+  const cs = caseStudies[index];
+  const next = caseStudies[(index + 1) % caseStudies.length];
+  const image = typeof cs.image === "string" ? cs.image : imageUrl(cs.image, 1800);
 
   return (
     <div className="bg-white font-sans text-neutral-900 antialiased">
@@ -44,7 +59,7 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
 
         <section className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
           <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-100">
-            <img src={cs.image} alt={cs.title} className="h-full w-full object-cover" />
+            <img src={image} alt={cs.title} className="h-full w-full object-cover" />
           </div>
         </section>
 

@@ -4,13 +4,19 @@ import { ArrowUpRight } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import { PLACEHOLDER_IMAGES } from "../components/placeholders";
+import { sanityFetch } from "../../sanity/lib/client";
+import { imageUrl } from "../../sanity/lib/image";
+import { workCategoriesQuery } from "../../sanity/lib/queries";
+import type { SanityImageSource } from "@sanity/image-url";
 
 export const metadata: Metadata = {
   title: "Work — NIVO",
   description: "What we shoot, by category — brand film, social content, live coverage and interview series.",
 };
 
-const CATEGORIES = [
+type WorkCategory = { name: string; blurb?: string; count?: string; image?: SanityImageSource };
+
+const FALLBACK_CATEGORIES: WorkCategory[] = [
   {
     name: "Brand Film",
     blurb: "Launch films, product stories and campaign hero videos.",
@@ -37,7 +43,10 @@ const CATEGORIES = [
   },
 ];
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const fetched = await sanityFetch<WorkCategory[]>(workCategoriesQuery);
+  const CATEGORIES = fetched && fetched.length > 0 ? fetched : FALLBACK_CATEGORIES;
+
   return (
     <div className="bg-white font-sans text-neutral-900 antialiased">
       <SiteHeader />
@@ -62,7 +71,7 @@ export default function WorkPage() {
                 className="group relative flex min-h-[22rem] flex-col justify-end overflow-hidden rounded-2xl bg-ink p-8 text-white"
               >
                 <img
-                  src={cat.image}
+                  src={typeof cat.image === "string" ? cat.image : imageUrl(cat.image, 1200)}
                   alt={cat.name}
                   className="absolute inset-0 h-full w-full scale-105 object-cover opacity-60 transition duration-500 group-hover:scale-110 group-hover:opacity-70"
                 />

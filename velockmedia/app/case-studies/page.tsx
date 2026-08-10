@@ -3,21 +3,30 @@ import Link from "next/link";
 import { ArrowUpRight, Star } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
-import { CASE_STUDIES } from "./data";
+import { CASE_STUDIES as FALLBACK_CASE_STUDIES, type CaseStudy } from "./data";
+import { sanityFetch } from "../../sanity/lib/client";
+import { imageUrl } from "../../sanity/lib/image";
+import { caseStudiesPageQuery, caseStudiesQuery, testimonialsQuery } from "../../sanity/lib/queries";
+import type { SanityImageSource } from "@sanity/image-url";
 
 export const metadata: Metadata = {
   title: "Case Studies — NIVO",
   description: "Real projects shot on the NIVO system, from brand films to weekly interview shows.",
 };
 
-const METRICS = [
+type SanityCaseStudy = Omit<CaseStudy, "image" | "challenge" | "solution" | "results"> & { image?: SanityImageSource };
+type Testimonial = { quote: string; name: string; role?: string };
+type Metric = { label: string; value: string };
+type CaseStudiesPageContent = { eyebrow?: string; heading?: string; intro?: string; metrics?: Metric[] };
+
+const FALLBACK_METRICS: Metric[] = [
   { label: "Projects delivered", value: "150+" },
   { label: "Clients served", value: "40+" },
   { label: "Countries shot in", value: "12" },
   { label: "Upwork rating", value: "4.9" },
 ];
 
-const TESTIMONIALS = [
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
     quote: "They shipped six launch cuts in nine days without a single reshoot. The whole thing looked native to our brand.",
     name: "Priya Anand",
@@ -35,21 +44,32 @@ const TESTIMONIALS = [
   },
 ];
 
-export default function CaseStudiesPage() {
+export default async function CaseStudiesPage() {
+  const [fetchedCaseStudies, fetchedTestimonials, pageContent] = await Promise.all([
+    sanityFetch<SanityCaseStudy[]>(caseStudiesQuery),
+    sanityFetch<Testimonial[]>(testimonialsQuery),
+    sanityFetch<CaseStudiesPageContent>(caseStudiesPageQuery),
+  ]);
+
+  const usingSanity = Boolean(fetchedCaseStudies && fetchedCaseStudies.length > 0);
+  const CASE_STUDIES = usingSanity ? fetchedCaseStudies! : FALLBACK_CASE_STUDIES;
+  const TESTIMONIALS = fetchedTestimonials && fetchedTestimonials.length > 0 ? fetchedTestimonials : FALLBACK_TESTIMONIALS;
+  const METRICS = pageContent?.metrics && pageContent.metrics.length > 0 ? pageContent.metrics : FALLBACK_METRICS;
+  const eyebrow = pageContent?.eyebrow || "Case Studies";
+  const heading = pageContent?.heading || "Real shoots, real deadlines, real results.";
+  const intro =
+    pageContent?.intro ||
+    "A selection of projects delivered on the NIVO system — from single-day brand films to weekly production schedules with zero crew.";
+
   return (
     <div className="bg-white font-sans text-neutral-900 antialiased">
       <SiteHeader />
 
       <main>
         <section className="mx-auto max-w-7xl px-5 pb-16 pt-16 sm:px-8 sm:pt-20 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Case Studies</p>
-          <h1 className="font-display mt-5 max-w-3xl text-4xl font-medium tracking-[-0.03em] sm:text-5xl">
-            Real shoots, real deadlines, real results.
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
-            A selection of projects delivered on the NIVO system — from single-day brand films to weekly production
-            schedules with zero crew.
-          </p>
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">{eyebrow}</p>
+          <h1 className="font-display mt-5 max-w-3xl text-4xl font-medium tracking-[-0.03em] sm:text-5xl">{heading}</h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">{intro}</p>
         </section>
 
         <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
@@ -62,7 +82,7 @@ export default function CaseStudiesPage() {
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                   <img
-                    src={cs.image}
+                    src={typeof cs.image === "string" ? cs.image : imageUrl(cs.image, 1200)}
                     alt={cs.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
