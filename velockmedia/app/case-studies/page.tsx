@@ -1,13 +1,46 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Star } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
+import BookCallButton from "../components/BookCallButton";
 import { CASE_STUDIES as FALLBACK_CASE_STUDIES, type CaseStudy } from "./data";
 import { sanityFetch } from "../../sanity/lib/client";
 import { imageUrl } from "../../sanity/lib/image";
 import { caseStudiesPageQuery, caseStudiesQuery, testimonialsQuery } from "../../sanity/lib/queries";
 import type { SanityImageSource } from "@sanity/image-url";
+
+type Review = { quote: string; initials: string; bg: string; fg: string; name: string; role: string };
+
+function ReviewRow({ speed, reviews }: { speed: string; reviews: Review[] }) {
+  const numericSpeed = parseFloat(speed) || 0.4;
+  const marqueeStyle = {
+    "--marquee-duration": `${Math.round(38 + Math.abs(numericSpeed) * 10)}s`,
+    "--marquee-direction": numericSpeed > 0 ? "reverse" : "normal",
+  } as CSSProperties;
+
+  return (
+    <div className="marquee-loop edge-fade flex w-max will-change-transform" style={marqueeStyle}>
+      {[0, 1].map((pass) => (
+        <div key={pass} aria-hidden={pass === 1} className="flex gap-5 pr-5">
+          {reviews.map((r) => (
+            <blockquote key={r.name} className="flex w-[86vw] flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm sm:w-[26rem]">
+              <p className="text-base leading-7 text-neutral-700">&ldquo;{r.quote}&rdquo;</p>
+              <footer className="mt-8 flex items-center gap-3 border-t border-neutral-100 pt-5">
+                <div className={`grid h-10 w-10 place-items-center rounded-full text-sm font-medium ${r.bg} ${r.fg}`}>{r.initials}</div>
+                <div>
+                  <p className="text-sm font-medium">{r.name}</p>
+                  <p className="font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">{r.role}</p>
+                </div>
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export const metadata: Metadata = {
   title: "Case Studies — NIVO",
@@ -120,16 +153,35 @@ export default async function CaseStudiesPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">What clients say</p>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="rounded-2xl border border-neutral-200 p-6">
-                <p className="text-base leading-7 text-neutral-700">&ldquo;{t.quote}&rdquo;</p>
-                <p className="mt-6 text-sm font-medium text-neutral-900">{t.name}</p>
-                <p className="text-sm text-neutral-500">{t.role}</p>
-              </div>
-            ))}
+        {/* ============ 09 · REVIEWS ============ */}
+        <section id="reviews" className="overflow-hidden border-y border-neutral-200 bg-neutral-50 py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Creator reviews</p>
+            <h2 className="font-display mt-5 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
+              Trusted by creators on the move.
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-7 text-neutral-500" data-reveal>
+              Real stories from people filming, sharing and building wherever inspiration takes them.
+            </p>
+          </div>
+
+          <div className="mt-14 space-y-5">
+            <ReviewRow
+              speed="-0.5"
+              reviews={[
+                { quote: "NIVO lets me film professional travel content without carrying a full camera bag. I can set it up and start recording in seconds.", initials: "RK", bg: "bg-emerald-100", fg: "text-emerald-800", name: "Rhea Kapoor", role: "Travel creator · YouTube" },
+                { quote: "The tracking feels like having a camera operator with me. I can teach, move and stay perfectly framed while filming alone.", initials: "PS", bg: "bg-blue-100", fg: "text-blue-800", name: "Prayush Sinha", role: "Education creator · Instagram" },
+                { quote: "The Mic Mini handles busy streets surprisingly well. My voice stays clear, and the backup recording gives me complete confidence.", initials: "ML", bg: "bg-amber-100", fg: "text-amber-800", name: "Maya Lee", role: "Lifestyle creator · TikTok" },
+              ]}
+            />
+            <ReviewRow
+              speed="0.4"
+              reviews={[
+                { quote: "I shoot a weekly series solo. The kit replaced a gimbal, a shotgun mic and two lav packs — and it charges from the same cable as my laptop.", initials: "IA", bg: "bg-violet-100", fg: "text-violet-800", name: "Irfan Aga", role: "Documentary · Vimeo" },
+                { quote: "Vertical and horizontal from the same take. My editor stopped asking me to reshoot for the second platform.", initials: "MI", bg: "bg-cyan-100", fg: "text-cyan-800", name: "Mira Ingawale", role: "Food creator · Reels" },
+                { quote: "Nine hours of recording on one charge got me through a full festival day without hunting for an outlet.", initials: "NS", bg: "bg-rose-100", fg: "text-rose-800", name: "Nelson Sequeira", role: "Live events · Twitch" },
+              ]}
+            />
           </div>
         </section>
 
@@ -141,12 +193,9 @@ export default async function CaseStudiesPage() {
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">
               Tell us about the brief and we&apos;ll put together a plan that fits your timeline and budget.
             </p>
-            <Link
-              href="/#support"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white"
-            >
+            <BookCallButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
               Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-            </Link>
+            </BookCallButton>
           </div>
         </section>
       </main>

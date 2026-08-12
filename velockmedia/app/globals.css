@@ -53,3 +53,40 @@ body {
   transform-origin: left center;
   background: var(--color-acid);
 }
+
+/* Continuous horizontal scroller for review/testimonial rows. Content is
+   rendered twice (two "passes") so translating by -50% loops seamlessly. */
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Scoped separately from the plain `.marquee` layout class, which on the
+   landing page (app/page.tsx) is driven by a scroll-velocity-reactive GSAP
+   loop that sets `transform` directly — animating it here too would fight
+   that inline style. Only opt in with `.marquee-loop` where there's no JS
+   driver (e.g. the case studies testimonials). */
+.marquee-loop {
+  animation: marquee-scroll linear infinite;
+  animation-duration: var(--marquee-duration, 40s);
+  animation-direction: var(--marquee-direction, normal);
+}
+
+.marquee-loop:hover {
+  animation-play-state: paused;
+}
+
+.edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-loop {
+    animation: none;
+  }
+}

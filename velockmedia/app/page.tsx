@@ -23,6 +23,7 @@ import {
   Move3d,
   AudioLines,
 } from "lucide-react";
+import { useBookCall } from "./components/BookCallProvider";
 
 /**
  * NIVO — Pocket Creator Camera & Wireless Microphone
@@ -71,6 +72,7 @@ const FAQS = [
 ];
 
 export default function NivoPage() {
+  const { openBookCall } = useBookCall();
   const rootRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -101,8 +103,16 @@ export default function NivoPage() {
       // ---------------------------------------------------------------
       if (reduced) {
         root.classList.remove("js");
-        preloaderRef.current?.remove();
-        plPanelRef.current?.remove();
+        // Hide rather than .remove() — these are React-managed ref nodes, and
+        // ripping them out of the DOM directly desyncs React's fiber tree
+        // from reality. The next unrelated re-render (e.g. opening the
+        // booking modal) then crashes with a "not a child of this node"
+        // insertBefore error the first time React touches this subtree.
+        if (preloaderRef.current) preloaderRef.current.style.display = "none";
+        if (plPanelRef.current) plPanelRef.current.style.display = "none";
+        root.querySelectorAll<HTMLElement>("#apCtaWrap").forEach((el) => {
+          el.style.opacity = "1";
+        });
         initMenu();
         initFAQ();
         initForm();
@@ -236,10 +246,7 @@ export default function NivoPage() {
           .to(pre.querySelectorAll(".pl-bar, p, div > div"), { opacity: 0, duration: 0.4, ease: "power2.in" }, "+=0.15")
           .to(pre, { yPercent: -100, duration: 0.9, ease: "expo.inOut" }, "-=0.1")
           .to(panel, { scaleY: 0, transformOrigin: "top center", duration: 1.0, ease: "expo.inOut" }, "-=0.75")
-          .add(() => {
-            pre.remove();
-            panel.remove();
-          }, ">-0.05");
+          .set([pre, panel], { display: "none" }, ">-0.05");
       }
 
       // ---------------------------------------------------------------
@@ -290,7 +297,10 @@ export default function NivoPage() {
         const header = root!.querySelector<HTMLElement>("#siteHeader");
         if (!header) return;
         const darkSections = root!.querySelectorAll("#hero, #gallery, #tech, #support");
-        let last = 0;
+        // Seed with the real scroll position (not 0) — otherwise the very
+        // first onUpdate below can read a scrolled-in page as "scrolling
+        // down" and hide the header on load with no user input.
+        let last = window.scrollY || document.documentElement.scrollTop || 0;
 
         ScrollTrigger.create({
           trigger: document.body,
@@ -333,7 +343,21 @@ export default function NivoPage() {
           start: "top -80",
           onUpdate: (self) => {
             const y = self.scroll();
-            const down = y > last && y > 320;
+            const delta = y - last;
+
+            // Always show the header near the top, and ignore sub-pixel
+            // jitter from Lenis's smoothing so direction doesn't flip on
+            // every tiny scroll tick (that flip/overwrite churn is what
+            // made the header flicker in and out while scrolling).
+            if (y <= 320) {
+              gsap.to(header, { y: 0, duration: 0.6, ease: "power3.out", overwrite: true });
+              last = y;
+              return;
+            }
+
+            if (Math.abs(delta) < 6) return;
+
+            const down = delta > 0;
             last = y;
             gsap.to(header, { y: down ? -140 : 0, duration: 0.6, ease: "power3.out", overwrite: true });
           },
@@ -808,7 +832,13 @@ export default function NivoPage() {
           .to("#apTitle", { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.54)
           .to("#apCopy", { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.56)
           .to("#apStage", { scale: 1.18, ease: "power1.in", duration: 0.3 }, 0.7)
-          .to(".ap-chip", { opacity: 0, duration: 0.2 }, 0.78);
+          .to(".ap-chip", { opacity: 0, duration: 0.2 }, 0.78)
+          .fromTo(
+            "#apCtaWrap",
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+            0.94
+          );
       }
 
       // ---------------------------------------------------------------
@@ -1031,28 +1061,62 @@ export default function NivoPage() {
       <div id="progress" className="fixed inset-x-0 top-0 z-[160] h-0.5 origin-left scale-x-0 bg-acid" />
       <div id="grain" className="pointer-events-none fixed -inset-1/2 z-[150] opacity-[0.05]" style={{ backgroundImage: GRAIN_SVG }} />
 
-      
+
 
       {/* ============ HEADER ============ */}
       <header id="siteHeader" className="fixed inset-x-0 top-9 z-50" data-nav-theme="light">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10" aria-label="Main navigation">
-          <a href="#top" className="nav-ink flex items-center gap-3 text-white" data-cursor="Top">
-            <span className="grid h-9 w-9 place-items-center rounded-full border border-current/30 backdrop-blur">
-              <Aperture className="h-4 w-4" strokeWidth={1.5} />
-            </span>
-            <span className="font-display text-sm font-medium tracking-[0.18rem]">NIVO</span>
-          </a>
+        <nav
+          className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10"
+          aria-label="Main navigation"
+        >
+          <a
+  href="#top"
+  className="nav-ink flex items-center gap-3 text-white"
+  data-cursor="Top"
+>
+  <img
+    src="/WhiteLogo.png"
+    alt="NIVO"
+    className="h-10 w-auto object-contain"
+  />
+</a>
 
           <div id="navLinks" className="hidden items-center gap-1 md:flex">
-            <Link href="/work" className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white">Work</Link>
-            <Link href="/case-studies" className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white">Case Studies</Link>
-            <Link href="/about" className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white">About</Link>
+            <Link
+              href="/work"
+              className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white"
+            >
+              Work
+            </Link>
+
+            <Link
+              href="/case-studies"
+              className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white"
+            >
+              Case Studies
+            </Link>
+
+            <Link
+              href="/about"
+              className="rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70 transition hover:text-white"
+            >
+              About
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="#support" data-magnetic data-cursor="Book" className="nav-cta hidden overflow-hidden rounded-full bg-white px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:bg-acid sm:inline-flex">
-              <span className="btn-flip relative block"><span className="block">Book a call</span></span>
-            </a>
+            <button
+              type="button"
+              onClick={openBookCall}
+              data-magnetic
+              data-cursor="Book"
+              className="nav-cta hidden overflow-hidden rounded-full bg-white px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:bg-acid sm:inline-flex"
+            >
+              <span className="btn-flip relative block">
+                <span className="block">Book a call</span>
+              </span>
+            </button>
+
             <button
               ref={menuButtonRef}
               id="menuButton"
@@ -1071,7 +1135,7 @@ export default function NivoPage() {
             <Link href="/work" className="rounded-xl px-4 py-3 text-sm hover:bg-white/10">Work</Link>
             <Link href="/case-studies" className="rounded-xl px-4 py-3 text-sm hover:bg-white/10">Case Studies</Link>
             <Link href="/about" className="rounded-xl px-4 py-3 text-sm hover:bg-white/10">About</Link>
-            <a href="#support" className="mt-3 rounded-xl bg-acid px-4 py-3 text-center text-sm font-medium text-ink">Book a call</a>
+            <button type="button" onClick={openBookCall} className="mt-3 rounded-xl bg-acid px-4 py-3 text-center text-sm font-medium text-ink">Book a call</button>
           </div>
         </div>
       </header>
@@ -1148,85 +1212,6 @@ export default function NivoPage() {
           </div>
         </section>
 
-        {/* ============ 03 · MANIFESTO ============ */}
-        <section id="manifesto" className="relative bg-white">
-          <div className="mx-auto max-w-6xl px-5 py-[18vh] sm:px-8 lg:px-10">
-            <p className="mb-10 font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(01) — The idea</p>
-            <p id="manifestoText" className="font-display text-[7.2vw] font-medium leading-[1.06] tracking-[-0.025em] text-neutral-900 sm:text-5xl lg:text-[3.6rem]">
-              A camera bag used to be the price of entry. We put the whole studio — optics, stabilization, and broadcast sound
-              — into something that disappears into your pocket. So the only thing left to carry is the idea.
-            </p>
-          </div>
-        </section>
-
-        {/* ============ 04 · NUMBERS ============ */}
-        <section id="products" className="border-t border-neutral-200 bg-white py-20 sm:py-28">
-          <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-            <div>
-              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(02) — Built to travel</p>
-              <h2 className="font-display mt-5 max-w-lg text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                Studio standards. Backpack footprint.
-              </h2>
-              <p className="mt-7 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                NIVO One was engineered around a single constraint: everything a creator needs has to fit in one hand. A
-                stabilized sensor, a wireless mic system, and a battery that outlasts the shoot.
-              </p>
-              <p className="mt-4 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                No rig. No cage. No crew. Pull it out, press record, and the footage is already graded, framed, and mixed the
-                way you would have done it in post.
-              </p>
-
-              <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4" data-stagger>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="118" data-suffix="g">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Body weight</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="4" data-suffix="K60">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Cinematic capture</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="240" data-suffix="m">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Wireless mic range</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="9" data-suffix="h">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Battery, recording</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative min-h-[32rem] overflow-hidden rounded-[2rem] bg-neutral-50 p-6 sm:p-10">
-              <div className="pointer-events-none absolute inset-0 opacity-60">
-                <div className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
-                <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200" />
-                <div className="absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
-              </div>
-              <div className="relative flex h-full flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em]">In the box</span>
-                  <PackageOpen className="h-6 w-6 text-neutral-400" strokeWidth={1.5} />
-                </div>
-                <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
-                  {[
-                    { t: "NIVO One", s: "4K camera body", dot: "bg-acid" },
-                    { t: "Mic Mini", s: "Wireless capsule", dot: "bg-acid" },
-                    { t: "Receiver", s: "USB-C dual-ch.", dot: "bg-acid" },
-                    { t: "Charge case", s: "3 full cycles", dot: "bg-neutral-300" },
-                    { t: "Wide lens", s: "0.62× adapter", dot: "bg-neutral-300" },
-                    { t: "Mini tripod", s: "Folds to grip", dot: "bg-neutral-300" },
-                  ].map((item) => (
-                    <div key={item.t} className="rounded-2xl border border-neutral-200 bg-white/90 p-4 shadow-sm backdrop-blur">
-                      <span className={`mb-3 block h-1.5 w-1.5 rounded-full ${item.dot}`} />
-                      <p className="text-sm font-medium">{item.t}</p>
-                      <p className="mt-1 text-xs text-neutral-500">{item.s}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ============ 05 · LINEUP ============ */}
         <section id="lineup" className="relative bg-neutral-50 pb-[10vh] pt-20 sm:pt-28">
@@ -1329,10 +1314,10 @@ export default function NivoPage() {
                       USB-C cable.
                     </p>
                   </div>
-                  <a href="#support" data-magnetic data-cursor="Add" className="inline-flex w-fit items-center gap-2 rounded-full bg-acid px-5 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
+                  <button type="button" onClick={openBookCall} data-magnetic data-cursor="Add" className="inline-flex w-fit items-center gap-2 rounded-full bg-acid px-5 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
                     Add Creator Kit to cart
                     <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-                  </a>
+                  </button>
                 </div>
               </div>
             </article>
@@ -1390,6 +1375,200 @@ export default function NivoPage() {
             </div>
           </div>
         </section>
+
+        {/* ============ 08 · CREATOR STORIES ============ */}
+        <section id="stories" className="overflow-hidden bg-white py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-type>(06) — Creator stories</p>
+            <div className="mt-5 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <h2 className="font-display max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-type data-type-delay="0.45">
+                Over 100,000 creators, each shooting their own way.
+              </h2>
+              <a href="#support" data-cursor="Join" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
+                Join the community <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              </a>
+            </div>
+
+            <div className="mt-16 grid gap-x-8 gap-y-16 md:grid-cols-2">
+              {[
+                { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png", alt: "Travel creator filming a coastal road", eyebrow: "Travel film · Iceland", title: "Ring Road, one hand", body: "Eight days, no tripod, no second body. Shot entirely handheld at 4K60 with the gimbal doing the steadying.", n: "01", rounded: "rounded-[2rem]", mt: "" },
+                { src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90", alt: "Creator recording a street interview", eyebrow: "Street interviews · Tokyo", title: "Two mics, zero retakes", body: "Dual-channel wireless with on-capsule backup recording — the Shibuya crossing never once ruined a take.", n: "02", rounded: "rounded-[3.5rem] rounded-bl-2xl", mt: "md:mt-24" },
+                { src: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1300&q=90", alt: "Studio tutorial being filmed", eyebrow: "Tutorials · Berlin", title: "A studio on a desk", body: "Subject tracking keeps the frame locked while the host moves between the bench and the whiteboard.", n: "03", rounded: "rounded-[2rem]", mt: "" },
+                { src: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1300&q=90", alt: "Night city creator shoot", eyebrow: "Night series · Lisbon", title: "After the sun goes", body: "Dual-native ISO and f/1.6 turn empty streets into a usable set long after the light is gone.", n: "04", rounded: "rounded-[3.5rem] rounded-tr-2xl", mt: "md:mt-24" },
+              ].map((s) => (
+                <article key={s.n} className={`group ${s.mt}`} data-story>
+                  <div className={`overflow-hidden ${s.rounded}`} data-clip>
+                    <img data-parallax-img src={s.src} alt={s.alt} className="aspect-[4/3] w-full scale-110 object-cover transition-transform duration-[1.2s] group-hover:scale-[1.16]" />
+                  </div>
+                  <div className="mt-6 flex items-start justify-between gap-5">
+                    <div>
+                      <p data-type className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">{s.eyebrow}</p>
+                      <h3 data-split="lines" className="font-display mt-2 text-2xl font-medium tracking-[-0.02em]">{s.title}</h3>
+                      <p className="mt-3 max-w-md text-base leading-7 text-neutral-600">{s.body}</p>
+                    </div>
+                    <span data-num className="font-display text-5xl font-light text-neutral-200">{s.n}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============ 04 · NUMBERS ============ */}
+        <section id="products" className="border-t border-neutral-200 bg-white py-20 sm:py-28">
+          <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
+            <div>
+              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(02) — Built to travel</p>
+              <h2 className="font-display mt-5 max-w-lg text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
+                Studio standards. Backpack footprint.
+              </h2>
+              <p className="mt-7 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
+                NIVO One was engineered around a single constraint: everything a creator needs has to fit in one hand. A
+                stabilized sensor, a wireless mic system, and a battery that outlasts the shoot.
+              </p>
+              <p className="mt-4 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
+                No rig. No cage. No crew. Pull it out, press record, and the footage is already graded, framed, and mixed the
+                way you would have done it in post.
+              </p>
+
+              <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4" data-stagger>
+                <div className="border-t border-neutral-900/15 pt-4">
+                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="118" data-suffix="g">0</span></p>
+                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Body weight</p>
+                </div>
+                <div className="border-t border-neutral-900/15 pt-4">
+                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="4" data-suffix="K60">0</span></p>
+                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Cinematic capture</p>
+                </div>
+                <div className="border-t border-neutral-900/15 pt-4">
+                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="240" data-suffix="m">0</span></p>
+                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Wireless mic range</p>
+                </div>
+                <div className="border-t border-neutral-900/15 pt-4">
+                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="9" data-suffix="h">0</span></p>
+                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Battery, recording</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative min-h-[32rem] overflow-hidden rounded-[2rem] bg-neutral-50 p-6 sm:p-10">
+              <div className="pointer-events-none absolute inset-0 opacity-60">
+                <div className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
+                <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200" />
+                <div className="absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
+              </div>
+              <div className="relative flex h-full flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em]">In the box</span>
+                  <PackageOpen className="h-6 w-6 text-neutral-400" strokeWidth={1.5} />
+                </div>
+                <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
+                  {[
+                    { t: "NIVO One", s: "4K camera body", dot: "bg-acid" },
+                    { t: "Mic Mini", s: "Wireless capsule", dot: "bg-acid" },
+                    { t: "Receiver", s: "USB-C dual-ch.", dot: "bg-acid" },
+                    { t: "Charge case", s: "3 full cycles", dot: "bg-neutral-300" },
+                    { t: "Wide lens", s: "0.62× adapter", dot: "bg-neutral-300" },
+                    { t: "Mini tripod", s: "Folds to grip", dot: "bg-neutral-300" },
+                  ].map((item) => (
+                    <div key={item.t} className="rounded-2xl border border-neutral-200 bg-white/90 p-4 shadow-sm backdrop-blur">
+                      <span className={`mb-3 block h-1.5 w-1.5 rounded-full ${item.dot}`} />
+                      <p className="text-sm font-medium">{item.t}</p>
+                      <p className="mt-1 text-xs text-neutral-500">{item.s}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* ============ 09 · REVIEWS ============ */}
+        <section id="reviews" className="overflow-hidden border-y border-neutral-200 bg-neutral-50 py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Creator reviews</p>
+            <h2 className="font-display mt-5 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
+              Trusted by creators on the move.
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-7 text-neutral-500" data-reveal>
+              Real stories from people filming, sharing and building wherever inspiration takes them.
+            </p>
+          </div>
+
+          <div className="mt-14 space-y-5">
+            <ReviewRow
+              speed="-0.5"
+              reviews={[
+                { quote: "NIVO lets me film professional travel content without carrying a full camera bag. I can set it up and start recording in seconds.", initials: "RK", bg: "bg-emerald-100", fg: "text-emerald-800", name: "Rhea Kapoor", role: "Travel creator · YouTube" },
+                { quote: "The tracking feels like having a camera operator with me. I can teach, move and stay perfectly framed while filming alone.", initials: "PS", bg: "bg-blue-100", fg: "text-blue-800", name: "Prayush Sinha", role: "Education creator · Instagram" },
+                { quote: "The Mic Mini handles busy streets surprisingly well. My voice stays clear, and the backup recording gives me complete confidence.", initials: "ML", bg: "bg-amber-100", fg: "text-amber-800", name: "Maya Lee", role: "Lifestyle creator · TikTok" },
+              ]}
+            />
+            <ReviewRow
+              speed="0.4"
+              reviews={[
+                { quote: "I shoot a weekly series solo. The kit replaced a gimbal, a shotgun mic and two lav packs — and it charges from the same cable as my laptop.", initials: "IA", bg: "bg-violet-100", fg: "text-violet-800", name: "Irfan Aga", role: "Documentary · Vimeo" },
+                { quote: "Vertical and horizontal from the same take. My editor stopped asking me to reshoot for the second platform.", initials: "MI", bg: "bg-cyan-100", fg: "text-cyan-800", name: "Mira Ingawale", role: "Food creator · Reels" },
+                { quote: "Nine hours of recording on one charge got me through a full festival day without hunting for an outlet.", initials: "NS", bg: "bg-rose-100", fg: "text-rose-800", name: "Nelson Sequeira", role: "Live events · Twitch" },
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* ============ 10 · FAQ ============ */}
+        <section id="faq" className="relative overflow-hidden bg-neutral-100 py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+              <div className="lg:sticky lg:top-28 lg:self-start">
+                <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(08) — Questions</p>
+                <h2 className="font-display mt-5 max-w-xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
+                  Everything you need to know before you press record.
+                </h2>
+                <p className="mt-6 max-w-lg text-base leading-7 text-neutral-600" data-reveal>
+                  Shipping, compatibility, warranty and what actually comes in the box.
+                </p>
+                <button type="button" onClick={openBookCall} data-magnetic data-cursor="Ask" className="mt-9 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white" data-reveal>
+                  Ask us anything <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                </button>
+              </div>
+
+              <div ref={faqListRef} id="faqList" className="divide-y divide-neutral-300 border-y border-neutral-300">
+                {FAQS.map((item) => (
+                  <div key={item.q} className={`faq-item${item.open ? " is-open" : ""}`}>
+                    <button type="button" className="faq-head flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left sm:py-7" aria-expanded={!!item.open}>
+                      <span className="font-display text-lg tracking-[-0.01em] text-neutral-900 sm:text-xl">{item.q}</span>
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-300 bg-white">
+                        <svg className="faq-plus h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
+                          <path d="M5 12h14" />
+                          <path d="M12 5v14" />
+                        </svg>
+                      </span>
+                    </button>
+                    <div className="faq-body" style={item.open ? { height: "auto" } : { height: 0 }}>
+                      <div className="max-w-2xl pb-7 pr-12 text-base leading-7 text-neutral-600">{item.a}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ 03 · MANIFESTO ============ */}
+        <section id="manifesto" className="relative bg-white">
+          <div className="mx-auto max-w-6xl px-5 py-[18vh] sm:px-8 lg:px-10">
+            <p className="mb-10 font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(01) — The idea</p>
+            <p id="manifestoText" className="font-display text-[7.2vw] font-medium leading-[1.06] tracking-[-0.025em] text-neutral-900 sm:text-5xl lg:text-[3.6rem]">
+              A camera bag used to be the price of entry. We put the whole studio — optics, stabilization, and broadcast sound
+              — into something that disappears into your pocket. So the only thing left to carry is the idea.
+            </p>
+          </div>
+        </section>
+
+
+
+
+
+
 
         {/* ============ 07 · APERTURE ============ */}
         <section id="tech" className="relative bg-ink text-white">
@@ -1468,6 +1647,17 @@ export default function NivoPage() {
                   A wide aperture, a stacked sensor and dual-native ISO. Scroll to open the iris and watch the frame gather
                   light.
                 </p>
+                <div id="apCtaWrap" className="mt-8 opacity-0">
+                  <button
+                    type="button"
+                    onClick={openBookCall}
+                    data-magnetic
+                    data-cursor="Book"
+                    className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-acid px-7 py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                  >
+                    Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1492,114 +1682,11 @@ export default function NivoPage() {
           </div>
         </section>
 
-        {/* ============ 08 · CREATOR STORIES ============ */}
-        <section id="stories" className="overflow-hidden bg-white py-20 sm:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-type>(06) — Creator stories</p>
-            <div className="mt-5 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-              <h2 className="font-display max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-type data-type-delay="0.45">
-                Over 100,000 creators, each shooting their own way.
-              </h2>
-              <a href="#support" data-cursor="Join" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
-                Join the community <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-              </a>
-            </div>
 
-            <div className="mt-16 grid gap-x-8 gap-y-16 md:grid-cols-2">
-              {[
-                { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png", alt: "Travel creator filming a coastal road", eyebrow: "Travel film · Iceland", title: "Ring Road, one hand", body: "Eight days, no tripod, no second body. Shot entirely handheld at 4K60 with the gimbal doing the steadying.", n: "01", rounded: "rounded-[2rem]", mt: "" },
-                { src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90", alt: "Creator recording a street interview", eyebrow: "Street interviews · Tokyo", title: "Two mics, zero retakes", body: "Dual-channel wireless with on-capsule backup recording — the Shibuya crossing never once ruined a take.", n: "02", rounded: "rounded-[3.5rem] rounded-bl-2xl", mt: "md:mt-24" },
-                { src: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1300&q=90", alt: "Studio tutorial being filmed", eyebrow: "Tutorials · Berlin", title: "A studio on a desk", body: "Subject tracking keeps the frame locked while the host moves between the bench and the whiteboard.", n: "03", rounded: "rounded-[2rem]", mt: "" },
-                { src: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1300&q=90", alt: "Night city creator shoot", eyebrow: "Night series · Lisbon", title: "After the sun goes", body: "Dual-native ISO and f/1.6 turn empty streets into a usable set long after the light is gone.", n: "04", rounded: "rounded-[3.5rem] rounded-tr-2xl", mt: "md:mt-24" },
-              ].map((s) => (
-                <article key={s.n} className={`group ${s.mt}`} data-story>
-                  <div className={`overflow-hidden ${s.rounded}`} data-clip>
-                    <img data-parallax-img src={s.src} alt={s.alt} className="aspect-[4/3] w-full scale-110 object-cover transition-transform duration-[1.2s] group-hover:scale-[1.16]" />
-                  </div>
-                  <div className="mt-6 flex items-start justify-between gap-5">
-                    <div>
-                      <p data-type className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">{s.eyebrow}</p>
-                      <h3 data-split="lines" className="font-display mt-2 text-2xl font-medium tracking-[-0.02em]">{s.title}</h3>
-                      <p className="mt-3 max-w-md text-base leading-7 text-neutral-600">{s.body}</p>
-                    </div>
-                    <span data-num className="font-display text-5xl font-light text-neutral-200">{s.n}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* ============ 09 · REVIEWS ============ */}
-        <section id="reviews" className="overflow-hidden border-y border-neutral-200 bg-neutral-50 py-20 sm:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Creator reviews</p>
-            <h2 className="font-display mt-5 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-              Trusted by creators on the move.
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-7 text-neutral-500" data-reveal>
-              Real stories from people filming, sharing and building wherever inspiration takes them.
-            </p>
-          </div>
 
-          <div className="mt-14 space-y-5">
-            <ReviewRow
-              speed="-0.5"
-              reviews={[
-                { quote: "NIVO lets me film professional travel content without carrying a full camera bag. I can set it up and start recording in seconds.", initials: "RK", bg: "bg-emerald-100", fg: "text-emerald-800", name: "Rhea Kapoor", role: "Travel creator · YouTube" },
-                { quote: "The tracking feels like having a camera operator with me. I can teach, move and stay perfectly framed while filming alone.", initials: "PS", bg: "bg-blue-100", fg: "text-blue-800", name: "Prayush Sinha", role: "Education creator · Instagram" },
-                { quote: "The Mic Mini handles busy streets surprisingly well. My voice stays clear, and the backup recording gives me complete confidence.", initials: "ML", bg: "bg-amber-100", fg: "text-amber-800", name: "Maya Lee", role: "Lifestyle creator · TikTok" },
-              ]}
-            />
-            <ReviewRow
-              speed="0.4"
-              reviews={[
-                { quote: "I shoot a weekly series solo. The kit replaced a gimbal, a shotgun mic and two lav packs — and it charges from the same cable as my laptop.", initials: "IA", bg: "bg-violet-100", fg: "text-violet-800", name: "Irfan Aga", role: "Documentary · Vimeo" },
-                { quote: "Vertical and horizontal from the same take. My editor stopped asking me to reshoot for the second platform.", initials: "MI", bg: "bg-cyan-100", fg: "text-cyan-800", name: "Mira Ingawale", role: "Food creator · Reels" },
-                { quote: "Nine hours of recording on one charge got me through a full festival day without hunting for an outlet.", initials: "NS", bg: "bg-rose-100", fg: "text-rose-800", name: "Nelson Sequeira", role: "Live events · Twitch" },
-              ]}
-            />
-          </div>
-        </section>
 
-        {/* ============ 10 · FAQ ============ */}
-        <section id="faq" className="relative overflow-hidden bg-neutral-100 py-20 sm:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-              <div className="lg:sticky lg:top-28 lg:self-start">
-                <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(08) — Questions</p>
-                <h2 className="font-display mt-5 max-w-xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                  Everything you need to know before you press record.
-                </h2>
-                <p className="mt-6 max-w-lg text-base leading-7 text-neutral-600" data-reveal>
-                  Shipping, compatibility, warranty and what actually comes in the box.
-                </p>
-                <a href="#support" data-magnetic data-cursor="Ask" className="mt-9 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white" data-reveal>
-                  Ask us anything <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-                </a>
-              </div>
 
-              <div ref={faqListRef} id="faqList" className="divide-y divide-neutral-300 border-y border-neutral-300">
-                {FAQS.map((item) => (
-                  <div key={item.q} className={`faq-item${item.open ? " is-open" : ""}`}>
-                    <button type="button" className="faq-head flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left sm:py-7" aria-expanded={!!item.open}>
-                      <span className="font-display text-lg tracking-[-0.01em] text-neutral-900 sm:text-xl">{item.q}</span>
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-300 bg-white">
-                        <svg className="faq-plus h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
-                      </span>
-                    </button>
-                    <div className="faq-body" style={item.open ? { height: "auto" } : { height: 0 }}>
-                      <div className="max-w-2xl pb-7 pr-12 text-base leading-7 text-neutral-600">{item.a}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* ============ 11 · STATEMENT ============ */}
         <section id="statement" className="relative overflow-hidden bg-neutral-100 py-24 sm:py-32">
@@ -1611,9 +1698,9 @@ export default function NivoPage() {
               <span className="line-mask"><span className="line-inner text-neutral-400">WHERE</span></span>
             </h2>
             <div className="mt-14 flex flex-wrap justify-center gap-3" data-stagger>
-              <a href="#support" data-magnetic data-cursor="Mail" className="inline-flex items-center gap-2 rounded-full border border-neutral-400 bg-white px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition hover:bg-ink hover:text-white">
+              <button type="button" onClick={openBookCall} data-magnetic data-cursor="Mail" className="inline-flex items-center gap-2 rounded-full border border-neutral-400 bg-white px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition hover:bg-ink hover:text-white">
                 Email us <Mail className="h-4 w-4" strokeWidth={1.5} />
-              </a>
+              </button>
               <a href="#lineup" data-magnetic data-cursor="Buy" className="inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white">
                 Buy the Creator Kit <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
               </a>

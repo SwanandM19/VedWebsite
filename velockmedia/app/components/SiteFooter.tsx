@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Sparkle, ArrowRight } from "lucide-react";
+import BookCallButton from "./BookCallButton";
 
-const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+// `href: null` marks a CTA that opens the shared book-a-call modal instead of
+// navigating.
+type FooterLink = { label: string; href: string | null };
+
+const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: "Sitemap",
     links: [
@@ -17,14 +22,14 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: "Our process", href: "/about#process" },
       { label: "The founder", href: "/about#founder" },
       { label: "Principles", href: "/about#principles" },
-      { label: "Book a call", href: "/#support" },
+      { label: "Book a call", href: null },
     ],
   },
   {
     title: "Support",
     links: [
-      { label: "Help center", href: "/#support" },
-      { label: "Contact support", href: "/#support" },
+      { label: "Help center", href: "/#faq" },
+      { label: "Contact support", href: null },
       { label: "FAQ", href: "/#faq" },
     ],
   },
@@ -55,11 +60,17 @@ export default function SiteFooter() {
                 {col.title}
               </h3>
               <nav className="mt-7 flex flex-col gap-4 text-base text-white/55" aria-label={col.title}>
-                {col.links.map((l) => (
-                  <Link key={l.label} href={l.href} className="w-fit transition hover:text-white">
-                    {l.label}
-                  </Link>
-                ))}
+                {col.links.map((l) =>
+                  l.href === null ? (
+                    <BookCallButton key={l.label} className="w-fit text-left transition hover:text-white">
+                      {l.label}
+                    </BookCallButton>
+                  ) : (
+                    <Link key={l.label} href={l.href} className="w-fit transition hover:text-white">
+                      {l.label}
+                    </Link>
+                  )
+                )}
               </nav>
             </div>
           ))}
@@ -73,13 +84,10 @@ export default function SiteFooter() {
             <p className="mt-4 text-base leading-7 text-white/55">
               Tell us about your brief and we&apos;ll get back within one business day.
             </p>
-            <Link
-              href="/#support"
-              className="mt-7 inline-flex h-14 max-w-sm items-center justify-between gap-3 rounded-xl border border-white/25 bg-white/[0.03] px-5 text-base text-white transition-colors hover:border-acid"
-            >
+            <BookCallButton className="mt-7 inline-flex h-14 w-full max-w-sm items-center justify-between gap-3 rounded-xl border border-white/25 bg-white/[0.03] px-5 text-base text-white transition-colors hover:border-acid">
               Book a call
               <ArrowRight className="h-5 w-5" strokeWidth={1.5} />
-            </Link>
+            </BookCallButton>
           </div>
 
           <div className="pointer-events-none relative mt-16 h-48 lg:mt-0 lg:h-64">

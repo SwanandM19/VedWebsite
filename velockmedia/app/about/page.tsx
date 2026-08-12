@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowUpRight, Compass, Gauge, Handshake, ShieldCheck, Sparkle, Focus, type LucideIcon } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
+import BookCallButton from "../components/BookCallButton";
 import { PLACEHOLDER_IMAGES } from "../components/placeholders";
 import { sanityFetch } from "../../sanity/lib/client";
 import { imageUrl } from "../../sanity/lib/image";
@@ -143,12 +143,9 @@ export default async function AboutPage() {
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">
               Tell us about your brief and we&apos;ll put together a plan that fits your timeline and budget.
             </p>
-            <Link
-              href="/#support"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white"
-            >
+            <BookCallButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
               Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-            </Link>
+            </BookCallButton>
           </div>
         </section>
       </main>
