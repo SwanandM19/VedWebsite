@@ -3,5 +3,6 @@ import caseStudy from "./caseStudy";
 import testimonial from "./testimonial";
 import caseStudiesPage from "./caseStudiesPage";
 import aboutPage from "./aboutPage";
+import landingPage from "./landingPage";
 
-export const schemaTypes = [workCategory, caseStudy, testimonial, caseStudiesPage, aboutPage];
+export const schemaTypes = [workCategory, caseStudy, testimonial, caseStudiesPage, aboutPage, landingPage];

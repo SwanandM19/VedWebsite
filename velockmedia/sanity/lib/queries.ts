@@ -55,3 +55,45 @@ export const aboutPageQuery = `*[_type == "aboutPage"][0]{
   founderPhoto,
   principles
 }`;
+
+// Landing page singleton. Images stay as raw image objects so `imageUrl()` can
+// size them per slot; the hero video is resolved to a plain CDN URL here since
+// it is used as-is.
+export const landingPageQuery = `*[_type == "landingPage"][0]{
+  heroEyebrow, heroHeading, heroBody, heroPrimaryCta, heroSecondaryCta, heroCaption,
+  "heroVideoAssetUrl": heroVideo.asset->url,
+  heroVideoUrl,
+  heroPoster,
+  ticker,
+
+  servicesEyebrow, servicesHeading, servicesIntro,
+  services[]{ number, kicker, meta, title, copy, ctaLabel, image, featured },
+
+  audiencesEyebrow, audiencesHeading, audiencesIntro, audienceChips,
+  audienceSlides[]{ caption, alt, image },
+  audiencesOutroHeading, audiencesOutroCta,
+
+  whyEyebrow, whyHeading, whyLinkLabel,
+  whyItems[]{ eyebrow, title, body, alt, image },
+
+  proofEyebrow, proofHeading, proofParagraphs,
+  proofStats[]{ value, label },
+  proofPanelTitle,
+  proofSteps[]{ title, copy },
+
+  reviewsEyebrow, reviewsHeading, reviewsIntro, reviewsEmptyNote,
+
+  faqEyebrow, faqHeading, faqIntro, faqCtaLabel,
+  faqs[]{ q, a },
+
+  manifestoEyebrow, manifestoText,
+
+  apertureEyebrow, apertureTitle, apertureCopy, apertureCtaLabel, apertureBackdrop, apertureChips,
+  apertureOpenEyebrow, apertureOpenTitle, apertureOpenCopy,
+
+  statementKicker, statementLines, statementPrimaryCta, statementSecondaryCta,
+
+  footerColumns[]{ title, links[]{ label, href } },
+  footerCtaHeading, footerCtaBody, footerWordmark,
+  socialLinks[]{ platform, url }
+}`;
