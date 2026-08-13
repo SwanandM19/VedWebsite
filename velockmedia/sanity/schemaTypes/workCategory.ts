@@ -8,7 +8,12 @@ export default defineType({
     defineField({ name: "name", title: "Name", type: "string", validation: (r) => r.required() }),
     defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "name" } }),
     defineField({ name: "blurb", title: "Blurb", type: "string" }),
-    defineField({ name: "count", title: "Project count label", type: "string", description: "e.g. \"12 projects\"" }),
+    defineField({
+      name: "count",
+      title: "Project count label",
+      type: "string",
+      description: "Optional, e.g. \"12 projects\". Leave empty unless the number is verified — it is hidden when blank.",
+    }),
     defineField({
       name: "image",
       title: "Cover image",

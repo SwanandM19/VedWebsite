@@ -11,6 +11,7 @@ export default defineType({
     defineField({
       name: "metrics",
       title: "Metrics strip",
+      description: "Only verified figures. Never estimate — leave the bracketed placeholder in place until the real number is known.",
       type: "array",
       of: [
         {

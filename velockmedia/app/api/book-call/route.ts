@@ -9,6 +9,8 @@ type LeadPayload = {
   email: string;
   phone: string;
   company: string;
+  orgType: string;
+  sport: string;
   message: string;
 };
 
@@ -50,6 +52,8 @@ function renderLeadEmail(lead: LeadPayload) {
     ? `<a href="tel:${encodeURIComponent(lead.phone)}" style="color:${ACID};text-decoration:none;">${escapeHtml(lead.phone)}</a>`
     : '<span style="color:#6b7078;">—</span>';
   const company = lead.company ? escapeHtml(lead.company) : '<span style="color:#6b7078;">—</span>';
+  const orgType = lead.orgType ? escapeHtml(lead.orgType) : '<span style="color:#6b7078;">—</span>';
+  const sport = lead.sport ? escapeHtml(lead.sport) : '<span style="color:#6b7078;">—</span>';
   const message = lead.message
     ? escapeHtml(lead.message).replace(/\n/g, "<br/>")
     : '<span style="color:#6b7078;">—</span>';
@@ -64,7 +68,7 @@ function renderLeadEmail(lead: LeadPayload) {
 <html>
 <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>New lead</title></head>
 <body style="margin:0;padding:0;background-color:#0a0a0a;">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">New "Book a call" lead from ${escapeHtml(
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">New discovery-call request from ${escapeHtml(
     lead.name
   )}</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0a0a0a;padding:32px 12px;">
@@ -76,10 +80,10 @@ function renderLeadEmail(lead: LeadPayload) {
           </tr>
           <tr>
             <td style="padding:32px 28px 24px 28px;">
-              <p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:${ACID};font-weight:bold;">NIVO &middot; New Enquiry</p>
+              <p style="margin:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:${ACID};font-weight:bold;">Veloc Media &middot; New Enquiry</p>
               <h1 style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;color:#ffffff;font-weight:bold;">${escapeHtml(
                 lead.name
-              )} wants to book a call</h1>
+              )} wants to talk</h1>
               <p style="margin:10px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8b9098;">Received ${escapeHtml(
                 received
               )} IST</p>
@@ -91,7 +95,9 @@ function renderLeadEmail(lead: LeadPayload) {
 ${leadRow("Name", escapeHtml(lead.name))}
 ${leadRow("Email", mailto)}
 ${leadRow("Phone", phone)}
-${leadRow("Company", company)}
+${leadRow("Organization", company)}
+${leadRow("Org type", orgType)}
+${leadRow("Sport", sport)}
 ${leadRow("Message", message, true)}
               </table>
             </td>
@@ -113,7 +119,7 @@ ${leadRow("Message", message, true)}
           </tr>
           <tr>
             <td style="padding:18px 28px;background-color:#101216;border-top:1px solid #2a2d34;">
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#6b7078;">Sent automatically from the NIVO website booking form. Reply directly to this email to reach the lead.</p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#6b7078;">Sent automatically from the Veloc Media website booking form. Reply directly to this email to reach the lead.</p>
             </td>
           </tr>
         </table>
@@ -126,12 +132,14 @@ ${leadRow("Message", message, true)}
 
 function renderLeadText(lead: LeadPayload) {
   return [
-    "NIVO — NEW ENQUIRY",
+    "VELOC MEDIA — NEW ENQUIRY",
     "",
-    `Name:    ${lead.name}`,
-    `Email:   ${lead.email}`,
-    `Phone:   ${lead.phone || "—"}`,
-    `Company: ${lead.company || "—"}`,
+    `Name:         ${lead.name}`,
+    `Email:        ${lead.email}`,
+    `Phone:        ${lead.phone || "—"}`,
+    `Organization: ${lead.company || "—"}`,
+    `Org type:     ${lead.orgType || "—"}`,
+    `Sport:        ${lead.sport || "—"}`,
     "",
     "Message:",
     lead.message || "—",
@@ -156,10 +164,10 @@ async function sendLeadEmail(lead: LeadPayload) {
   });
 
   await transporter.sendMail({
-    from: `"NIVO Website" <${SMTP_USER}>`,
+    from: `"Veloc Media Website" <${SMTP_USER}>`,
     to: ADMIN_EMAIL,
     replyTo: lead.email,
-    subject: `New "Book a call" lead — ${lead.name}`,
+    subject: `New discovery-call request — ${lead.name}`,
     text: renderLeadText(lead),
     html: renderLeadEmail(lead),
   });
@@ -193,7 +201,7 @@ async function appendLeadToSheet(lead: LeadPayload) {
   const { token } = await jwt.getAccessToken();
   if (!token) throw new Error("Failed to obtain a Google access token.");
 
-  const range = encodeURIComponent("Sheet1!A:F");
+  const range = encodeURIComponent("Sheet1!A:H");
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`,
     {
@@ -203,7 +211,18 @@ async function appendLeadToSheet(lead: LeadPayload) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        values: [[new Date().toISOString(), lead.name, lead.email, lead.phone, lead.company, lead.message]],
+        values: [
+          [
+            new Date().toISOString(),
+            lead.name,
+            lead.email,
+            lead.phone,
+            lead.company,
+            lead.orgType,
+            lead.sport,
+            lead.message,
+          ],
+        ],
       }),
     }
   );
@@ -226,13 +245,15 @@ export async function POST(request: Request) {
   const email = String(body.email || "").trim().slice(0, 200);
   const phone = String(body.phone || "").trim().slice(0, 60);
   const company = String(body.company || "").trim().slice(0, 200);
+  const orgType = String(body.orgType || "").trim().slice(0, 100);
+  const sport = String(body.sport || "").trim().slice(0, 100);
   const message = String(body.message || "").trim().slice(0, 2000);
 
   if (!name || !email || !isValidEmail(email)) {
     return NextResponse.json({ ok: false, error: "Please provide a valid name and email." }, { status: 400 });
   }
 
-  const lead: LeadPayload = { name, email, phone, company, message };
+  const lead: LeadPayload = { name, email, phone, company, orgType, sport, message };
 
   const results = await Promise.allSettled([sendLeadEmail(lead), appendLeadToSheet(lead)]);
 

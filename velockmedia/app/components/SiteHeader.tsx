@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Aperture, Menu, X as XIcon } from "lucide-react";
+import { Menu, X as XIcon } from "lucide-react";
 import BookCallButton from "./BookCallButton";
 
 const NAV_LINKS = [
@@ -29,7 +29,7 @@ export default function SiteHeader() {
   >
     <img
       src="/FinalLogo.png"
-      alt="NIVO"
+      alt="Veloc Media"
       className="h-[38px] w-auto object-contain"
     />
   </Link>

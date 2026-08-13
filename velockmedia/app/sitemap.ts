@@ -3,7 +3,7 @@ import { CASE_STUDIES as FALLBACK_CASE_STUDIES } from "./case-studies/data";
 import { sanityFetch } from "../sanity/lib/client";
 import { caseStudySlugsQuery } from "../sanity/lib/queries";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://velocmedia.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const fetched = await sanityFetch<{ slug: string }[]>(caseStudySlugsQuery);

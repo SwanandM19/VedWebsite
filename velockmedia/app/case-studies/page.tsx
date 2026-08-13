@@ -43,8 +43,15 @@ function ReviewRow({ speed, reviews }: { speed: string; reviews: Review[] }) {
 }
 
 export const metadata: Metadata = {
-  title: "Case Studies — NIVO",
-  description: "Real projects shot on the NIVO system, from brand films to weekly interview shows.",
+  title: "Case Studies",
+  description:
+    "How Veloc approaches media for sports organizations: the challenge, the objective, the approach and the deliverables.",
+  openGraph: {
+    title: "Case Studies — Veloc Media",
+    description: "Real projects for sports organizations — the challenge, the objective, the approach and the deliverables.",
+    siteName: "Veloc Media",
+    type: "website",
+  },
 };
 
 type SanityCaseStudy = Omit<CaseStudy, "image" | "challenge" | "solution" | "results"> & { image?: SanityImageSource };
@@ -52,30 +59,19 @@ type Testimonial = { quote: string; name: string; role?: string };
 type Metric = { label: string; value: string };
 type CaseStudiesPageContent = { eyebrow?: string; heading?: string; intro?: string; metrics?: Metric[] };
 
+// [ADD VERIFIED NUMBERS] — managed in Sanity (Case Studies Page → Metrics).
+// Bracketed placeholders ship until real figures exist; never estimate.
 const FALLBACK_METRICS: Metric[] = [
-  { label: "Projects delivered", value: "150+" },
-  { label: "Clients served", value: "40+" },
-  { label: "Countries shot in", value: "12" },
-  { label: "Upwork rating", value: "4.9" },
+  { label: "Sports projects delivered", value: "[X]+" },
+  { label: "Organizations served", value: "[X]+" },
+  { label: "Sports worked in", value: "[X]+" },
+  { label: "Upwork rating", value: "[X.X]" },
 ];
 
-const FALLBACK_TESTIMONIALS: Testimonial[] = [
-  {
-    quote: "They shipped six launch cuts in nine days without a single reshoot. The whole thing looked native to our brand.",
-    name: "Priya Anand",
-    role: "Marketing Lead, Sunridge Outdoors",
-  },
-  {
-    quote: "One creator, one bag, thirty straight days of content — and it never felt rushed on camera.",
-    name: "Theo Marchetti",
-    role: "Founder, Wanderfolk",
-  },
-  {
-    quote: "We went from a multicam truck budget to a two-person crew with better footage. Every show ships the same night.",
-    name: "Jess Okafor",
-    role: "Producer, Afterglow Sessions",
-  },
-];
+// [ADD REAL TESTIMONIALS] — authored in Sanity (Testimonial documents). No
+// local fallback on purpose: an empty list shows a visible placeholder in the
+// reviews section rather than inventing a quote.
+const FALLBACK_TESTIMONIALS: Testimonial[] = [];
 
 export default async function CaseStudiesPage() {
   const [fetchedCaseStudies, fetchedTestimonials, pageContent] = await Promise.all([
@@ -89,10 +85,10 @@ export default async function CaseStudiesPage() {
   const TESTIMONIALS = fetchedTestimonials && fetchedTestimonials.length > 0 ? fetchedTestimonials : FALLBACK_TESTIMONIALS;
   const METRICS = pageContent?.metrics && pageContent.metrics.length > 0 ? pageContent.metrics : FALLBACK_METRICS;
   const eyebrow = pageContent?.eyebrow || "Case Studies";
-  const heading = pageContent?.heading || "Real shoots, real deadlines, real results.";
+  const heading = pageContent?.heading || "The objective, the approach, the work.";
   const intro =
     pageContent?.intro ||
-    "A selection of projects delivered on the NIVO system — from single-day brand films to weekly production schedules with zero crew.";
+    "Selected projects for sports organizations — what the client needed, what the content had to accomplish, how we approached it and what we delivered.";
 
   return (
     <div className="bg-white font-sans text-neutral-900 antialiased">
@@ -156,45 +152,54 @@ export default async function CaseStudiesPage() {
         {/* ============ 09 · REVIEWS ============ */}
         <section id="reviews" className="overflow-hidden border-y border-neutral-200 bg-neutral-50 py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Creator reviews</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400">Client reviews</p>
             <h2 className="font-display mt-5 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-              Trusted by creators on the move.
+              What organizations say after working with us.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-neutral-500" data-reveal>
-              Real stories from people filming, sharing and building wherever inspiration takes them.
+              Verified reviews from the organizations whose media we handle.
             </p>
           </div>
 
-          <div className="mt-14 space-y-5">
-            <ReviewRow
-              speed="-0.5"
-              reviews={[
-                { quote: "NIVO lets me film professional travel content without carrying a full camera bag. I can set it up and start recording in seconds.", initials: "RK", bg: "bg-emerald-100", fg: "text-emerald-800", name: "Rhea Kapoor", role: "Travel creator · YouTube" },
-                { quote: "The tracking feels like having a camera operator with me. I can teach, move and stay perfectly framed while filming alone.", initials: "PS", bg: "bg-blue-100", fg: "text-blue-800", name: "Prayush Sinha", role: "Education creator · Instagram" },
-                { quote: "The Mic Mini handles busy streets surprisingly well. My voice stays clear, and the backup recording gives me complete confidence.", initials: "ML", bg: "bg-amber-100", fg: "text-amber-800", name: "Maya Lee", role: "Lifestyle creator · TikTok" },
-              ]}
-            />
-            <ReviewRow
-              speed="0.4"
-              reviews={[
-                { quote: "I shoot a weekly series solo. The kit replaced a gimbal, a shotgun mic and two lav packs — and it charges from the same cable as my laptop.", initials: "IA", bg: "bg-violet-100", fg: "text-violet-800", name: "Irfan Aga", role: "Documentary · Vimeo" },
-                { quote: "Vertical and horizontal from the same take. My editor stopped asking me to reshoot for the second platform.", initials: "MI", bg: "bg-cyan-100", fg: "text-cyan-800", name: "Mira Ingawale", role: "Food creator · Reels" },
-                { quote: "Nine hours of recording on one charge got me through a full festival day without hunting for an outlet.", initials: "NS", bg: "bg-rose-100", fg: "text-rose-800", name: "Nelson Sequeira", role: "Live events · Twitch" },
-              ]}
-            />
-          </div>
+          {TESTIMONIALS.length > 0 ? (
+            <div className="mt-14 space-y-5">
+              <ReviewRow
+                speed="-0.5"
+                reviews={TESTIMONIALS.slice(0, 3).map((t, i) => ({
+                  quote: t.quote,
+                  name: t.name,
+                  role: t.role || "",
+                  initials: t.name.slice(0, 2).toUpperCase(),
+                  bg: ["bg-neutral-200", "bg-neutral-200", "bg-neutral-200"][i % 3],
+                  fg: "text-neutral-800",
+                }))}
+              />
+            </div>
+          ) : (
+            /* Placeholder, not a quote — populate Testimonials in Sanity. */
+            <div className="mx-auto mt-14 max-w-7xl px-5 sm:px-8 lg:px-10">
+              <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-12 text-center sm:px-12">
+                <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">[ADD REAL TESTIMONIALS]</p>
+                <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-500">
+                  Verified client reviews go here. We publish reviews as they are approved rather than writing them
+                  ourselves — ask us on a call and we will walk you through the feedback we have received so far.
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-7xl px-5 py-20 text-center sm:px-8 lg:px-10">
             <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
-              Have a shoot on the calendar?
+              Have a season or an event coming up?
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">
-              Tell us about the brief and we&apos;ll put together a plan that fits your timeline and budget.
+              Tell us what you are trying to achieve and we will work out what the content needs to do — and whether we
+              are the right fit to make it.
             </p>
             <BookCallButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
-              Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              Book a discovery call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
             </BookCallButton>
           </div>
         </section>

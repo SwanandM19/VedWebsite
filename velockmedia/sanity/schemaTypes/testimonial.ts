@@ -4,6 +4,7 @@ export default defineType({
   name: "testimonial",
   title: "Testimonial",
   type: "document",
+  description: "Verified client reviews only — never paraphrase or compose one.",
   fields: [
     defineField({ name: "quote", title: "Quote", type: "text", rows: 3, validation: (r) => r.required() }),
     defineField({ name: "name", title: "Name", type: "string", validation: (r) => r.required() }),

@@ -8,29 +8,30 @@ type FooterLink = { label: string; href: string | null };
 
 const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
-    title: "Sitemap",
+    title: "Services",
     links: [
-      { label: "Home", href: "/" },
-      { label: "Work", href: "/work" },
-      { label: "Case Studies", href: "/case-studies" },
-      { label: "About", href: "/about" },
+      { label: "Athlete recruitment media", href: "/#services" },
+      { label: "Event media operations", href: "/#services" },
+      { label: "League & team media", href: "/#services" },
+      { label: "Ongoing partnerships", href: "/#services" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "Our process", href: "/about#process" },
+      { label: "About Veloc", href: "/about" },
+      { label: "How we work", href: "/about#process" },
+      { label: "Our standard", href: "/about#principles" },
       { label: "The founder", href: "/about#founder" },
-      { label: "Principles", href: "/about#principles" },
-      { label: "Book a call", href: null },
     ],
   },
   {
-    title: "Support",
+    title: "Explore",
     links: [
-      { label: "Help center", href: "/#faq" },
-      { label: "Contact support", href: null },
+      { label: "Our work", href: "/work" },
+      { label: "Case studies", href: "/case-studies" },
       { label: "FAQ", href: "/#faq" },
+      { label: "Book a discovery call", href: null },
     ],
   },
 ];
@@ -79,13 +80,14 @@ export default function SiteFooter() {
         <div className="relative grid min-h-72 overflow-hidden pb-10 pt-6 lg:grid-cols-[0.9fr_1.5fr] lg:items-end">
           <div className="relative z-10 max-w-md">
             <h2 className="font-display text-2xl leading-tight tracking-[-0.02em] sm:text-3xl">
-              Have a project in mind? Let&apos;s talk.
+              Let&apos;s talk about your media.
             </h2>
             <p className="mt-4 text-base leading-7 text-white/55">
-              Tell us about your brief and we&apos;ll get back within one business day.
+              Tell us about your organization, project, event or season. We&apos;ll take a look and work out whether Veloc
+              is the right fit.
             </p>
             <BookCallButton className="mt-7 inline-flex h-14 w-full max-w-sm items-center justify-between gap-3 rounded-xl border border-white/25 bg-white/[0.03] px-5 text-base text-white transition-colors hover:border-acid">
-              Book a call
+              Book a discovery call
               <ArrowRight className="h-5 w-5" strokeWidth={1.5} />
             </BookCallButton>
           </div>
@@ -103,7 +105,7 @@ export default function SiteFooter() {
               className="absolute inset-x-0 bottom-0 whitespace-nowrap text-center font-display text-8xl font-light leading-none tracking-[-0.04em] sm:text-9xl lg:text-[12rem]"
               style={{ WebkitTextStroke: "1px rgba(255,255,255,.14)", color: "rgba(255,255,255,.06)" }}
             >
-              NIVO
+              VELOC
             </p>
           </div>
         </div>
@@ -112,10 +114,12 @@ export default function SiteFooter() {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-7xl flex-col gap-7 px-5 py-7 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
           <div className="flex items-center gap-5">
-            <Link href="/" aria-label="NIVO home" className="grid h-12 w-12 place-items-center rounded-full border border-white/25 font-display text-2xl font-light transition hover:border-acid hover:text-acid">
-              N
+            <Link href="/" aria-label="Veloc Media home" className="grid h-12 w-12 place-items-center rounded-full border border-white/25 font-display text-2xl font-light transition hover:border-acid hover:text-acid">
+              V
             </Link>
-            <p className="text-sm text-white/50">© 2026 NIVO</p>
+            <p className="text-sm text-white/50">
+              © {new Date().getFullYear()} Veloc Media · A StateShift Ventures company
+            </p>
           </div>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-white/50" aria-label="Legal">
             <a href="#" className="transition hover:text-white">Privacy</a>

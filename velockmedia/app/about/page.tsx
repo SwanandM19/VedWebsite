@@ -3,15 +3,22 @@ import { ArrowUpRight, Compass, Gauge, Handshake, ShieldCheck, Sparkle, Focus, t
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import BookCallButton from "../components/BookCallButton";
-import { PLACEHOLDER_IMAGES } from "../components/placeholders";
 import { sanityFetch } from "../../sanity/lib/client";
 import { imageUrl } from "../../sanity/lib/image";
 import { aboutPageQuery } from "../../sanity/lib/queries";
 import type { SanityImageSource } from "@sanity/image-url";
 
 export const metadata: Metadata = {
-  title: "About — NIVO",
-  description: "Our mission, how we operate, the founder behind NIVO, and the principles we shoot by.",
+  title: "About",
+  description:
+    "Veloc Media is a Sports Media Operations company built to become the trusted media partner behind ambitious sports organizations.",
+  openGraph: {
+    title: "About — Veloc Media",
+    description:
+      "Who we are, why we exist, how we think, and the standard we hold ourselves to as a sports media operations company.",
+    siteName: "Veloc Media",
+    type: "website",
+  },
 };
 
 const ICONS: Record<string, LucideIcon> = { Compass, Gauge, Handshake, ShieldCheck, Sparkle, Focus };
@@ -31,37 +38,44 @@ type AboutPageContent = {
 };
 
 const FALLBACK_PROCESS_STEPS: ProcessStep[] = [
-  { title: "Brief & scope", copy: "A short call to pin down the story, the deadline and what success looks like." },
-  { title: "Plan the shoot", copy: "Locations, kit and a shot list built around the NIVO one-bag workflow." },
-  { title: "Shoot", copy: "Lean crews, fast setups, and coverage built for the edit — not the other way around." },
-  { title: "Edit & deliver", copy: "Cuts turned around in days, not weeks, with revisions built into the timeline." },
+  { title: "Understand", copy: "We learn the sport, the organization, the event and the objective before anything else." },
+  { title: "Plan", copy: "We agree what needs to be created and how the footage and assets will be handled." },
+  { title: "Produce", copy: "Our team executes the post-production against that plan." },
+  { title: "Review", copy: "Quality control on our side first, then your feedback." },
+  { title: "Deliver", copy: "Final assets, organized and labelled so your team can actually use them." },
+  { title: "Continue", copy: "For ongoing clients the workflow becomes a repeatable media operation." },
 ];
 
 const FALLBACK_PRINCIPLES: Principle[] = [
-  { icon: "Compass", title: "Story first", copy: "Every shot earns its place by serving the story, not the gear list." },
-  { icon: "Gauge", title: "Move fast", copy: "Small crews and light kits mean faster setups and faster turnarounds." },
-  { icon: "Handshake", title: "Plain communication", copy: "One point of contact, clear timelines, no surprise invoices." },
-  { icon: "ShieldCheck", title: "Own the outcome", copy: "We don't hand off a drive of footage — we deliver a finished result." },
+  { icon: "Compass", title: "Understanding before execution", copy: "We establish what the content has to accomplish before we decide how to produce it." },
+  { icon: "ShieldCheck", title: "Ownership over excuses", copy: "When something is ours to solve, we solve it and we tell you where it stands." },
+  { icon: "Gauge", title: "Consistency over brilliance", copy: "The same standard in week twenty as in week one beats one exceptional edit." },
+  { icon: "Handshake", title: "Professionalism over flash", copy: "Clear communication and reliable delivery matter more than showing off effects." },
+  { icon: "Focus", title: "Systems over heroics", copy: "Repeatable workflows, so quality never depends on one person having a good week." },
+  { icon: "Sparkle", title: "Learning over ego", copy: "Every sport, league and organization works differently. We ask before we assume." },
 ];
 
 export default async function AboutPage() {
   const content = await sanityFetch<AboutPageContent>(aboutPageQuery);
 
-  const missionEyebrow = content?.missionEyebrow || "Our Mission";
+  const missionEyebrow = content?.missionEyebrow || "Who we are";
   const missionHeading =
-    content?.missionHeading || "Make studio-quality video possible for anyone with one bag and a deadline.";
+    content?.missionHeading || "The reliable media team behind ambitious sports organizations.";
   const missionBody =
     content?.missionBody ||
-    "NIVO started as a camera company and grew into a production partner — building the kit, the workflow, and the crew relationships that let small teams ship work that used to take a full production truck.";
+    "Veloc Media is a Sports Media Operations company. We exist because sports organizations should not have to wonder whether their media team will understand the assignment, meet the deadline, or deliver consistently. When you work with us, media becomes one less thing you have to worry about.";
 
   const processSteps = content?.processSteps && content.processSteps.length > 0 ? content.processSteps : FALLBACK_PROCESS_STEPS;
 
-  const founderName = content?.founderName || "Sam Rourke";
-  const founderRole = content?.founderRole || "Founder & Director";
+  // [ADD REAL FOUNDER DETAILS] — name, role, bio and photo are managed in
+  // Sanity (About Page). Until they are filled in, the page renders a neutral
+  // placeholder rather than an invented biography.
+  const founderName = content?.founderName || "[ADD FOUNDER NAME]";
+  const founderRole = content?.founderRole || "Founder";
   const founderBio =
     content?.founderBio ||
-    "Sam spent eight years shooting run-and-gun documentary work before building NIVO to solve a problem every small crew has: too much gear, not enough time. Today NIVO both makes the kit and runs the shoots — proof that the workflow holds up on real deadlines, not just on paper.";
-  const founderPhoto = content?.founderPhoto ? imageUrl(content.founderPhoto, 1000) : PLACEHOLDER_IMAGES.interview;
+    "[ADD FOUNDER BIO] — a short, human introduction to the person behind Veloc. Veloc is built to run as a company rather than around one individual, so keep this focused on perspective and standards rather than a full biography.";
+  const founderPhoto = content?.founderPhoto ? imageUrl(content.founderPhoto, 1000) : null;
 
   const principles = content?.principles && content.principles.length > 0 ? content.principles : FALLBACK_PRINCIPLES;
 
@@ -81,11 +95,15 @@ export default async function AboutPage() {
 
         {/* Process */}
         <section id="process" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">How we operate</p>
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">How we think</p>
           <h2 className="font-display mt-4 max-w-2xl text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
-            A four-step process built for tight timelines.
+            Understand first. Execute flawlessly.
           </h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-500">
+            The same sequence runs behind every engagement, whether it is a single recruitment reel or a full season of
+            league content.
+          </p>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {processSteps.map((step, i) => (
               <div key={step.title} className="rounded-2xl border border-neutral-200 p-6">
                 <span className="font-display text-sm text-neutral-300">{String(i + 1).padStart(2, "0")}</span>
@@ -100,10 +118,19 @@ export default async function AboutPage() {
         <section id="founder" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
           <div className="grid items-center gap-10 rounded-2xl bg-neutral-50 p-8 sm:p-12 lg:grid-cols-[0.8fr_1.2fr]">
             <div className="aspect-square overflow-hidden rounded-2xl bg-neutral-200">
-              <img src={founderPhoto} alt={`${founderName} portrait`} className="h-full w-full object-cover" />
+              {founderPhoto ? (
+                <img src={founderPhoto} alt={`${founderName} portrait`} className="h-full w-full object-cover" />
+              ) : (
+                <div
+                  className="grid h-full w-full place-items-center bg-ink"
+                  style={{ backgroundImage: "radial-gradient(circle at 30% 25%, rgba(255,105,0,.28), transparent 60%)" }}
+                >
+                  <span className="font-display text-6xl font-light text-white/25">V</span>
+                </div>
+              )}
             </div>
             <div>
-              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">About the founder</p>
+              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">The founder</p>
               <h2 className="font-display mt-4 text-3xl font-medium tracking-[-0.02em]">
                 {founderName}, {founderRole}
               </h2>
@@ -114,11 +141,11 @@ export default async function AboutPage() {
 
         {/* Principles */}
         <section id="principles" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Company principles</p>
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Our standard</p>
           <h2 className="font-display mt-4 max-w-2xl text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
-            What we hold ourselves to on every shoot.
+            What we hold ourselves to on every project.
           </h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {principles.map((p) => {
               const Icon = ICONS[p.icon] || Sparkle;
               return (
@@ -138,13 +165,14 @@ export default async function AboutPage() {
         <section className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-7xl px-5 py-20 text-center sm:px-8 lg:px-10">
             <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
-              Let&apos;s build something worth shipping.
+              Let&apos;s talk about your media.
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">
-              Tell us about your brief and we&apos;ll put together a plan that fits your timeline and budget.
+              Tell us about your organization, project, event or season. We&apos;ll take a look and work out whether Veloc
+              is the right fit.
             </p>
             <BookCallButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
-              Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              Book a discovery call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
             </BookCallButton>
           </div>
         </section>

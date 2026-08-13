@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const caseStudies = await getCaseStudies();
   const cs = caseStudies.find((c) => c.slug === slug);
   if (!cs) return {};
-  return { title: `${cs.client} — NIVO Case Studies`, description: cs.summary };
+  return { title: `${cs.client} — Case Study`, description: cs.summary };
 }
 
 export default async function CaseStudyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -38,7 +38,8 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
   if (index === -1) notFound();
 
   const cs = caseStudies[index];
-  const next = caseStudies[(index + 1) % caseStudies.length];
+  // With a single published case study there is no "next" to link to.
+  const next = caseStudies.length > 1 ? caseStudies[(index + 1) % caseStudies.length] : null;
   const image = typeof cs.image === "string" ? cs.image : imageUrl(cs.image, 1800);
 
   return (
@@ -70,11 +71,13 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
             <p className="mt-4 text-base leading-7 text-neutral-500">{cs.challenge}</p>
           </div>
           <div>
-            <h2 className="font-display text-xl font-medium tracking-[-0.02em]">The approach</h2>
+            <h2 className="font-display text-xl font-medium tracking-[-0.02em]">The objective &amp; approach</h2>
             <p className="mt-4 text-base leading-7 text-neutral-500">{cs.solution}</p>
           </div>
         </section>
 
+        {/* Outcomes render only when verified figures exist for this project. */}
+        {cs.results && cs.results.length > 0 && (
         <section className="mx-auto max-w-4xl px-5 pb-20 sm:px-8 lg:px-10">
           <div className="grid grid-cols-3 gap-6 rounded-2xl bg-neutral-50 px-6 py-10 text-center sm:px-10">
             {cs.results.map((r) => (
@@ -85,7 +88,9 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
             ))}
           </div>
         </section>
+        )}
 
+        {next && (
         <section className="border-t border-neutral-200">
           <Link
             href={`/case-studies/${next.slug}`}
@@ -98,15 +103,17 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
             <ArrowUpRight className="h-6 w-6 shrink-0 text-neutral-300 transition group-hover:text-acid" strokeWidth={1.5} />
           </Link>
         </section>
+        )}
 
         <section className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-7xl px-5 py-20 text-center sm:px-8 lg:px-10">
-            <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">Want results like this?</h2>
+            <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">Working on something similar?</h2>
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">
-              Tell us about your brief and we&apos;ll put together a plan that fits your timeline and budget.
+              Tell us about your organization and what you are trying to achieve. We work out what the content needs to do
+              before we talk about how to make it.
             </p>
             <BookCallButton className="mt-8 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
-              Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              Book a discovery call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
             </BookCallButton>
           </div>
         </section>

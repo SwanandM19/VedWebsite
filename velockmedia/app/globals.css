@@ -8,8 +8,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Elms Sans carries body copy; Orbitron is the display face used by every
+     `font-display` heading, eyebrow and stat on the site. Both are loaded and
+     self-hosted by next/font in app/layout.tsx. */
+  --font-sans: var(--font-elms-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-orbitron), var(--font-elms-sans), ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --color-ink: #16181d;
   --color-acid: #ff6900;
@@ -36,7 +40,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .pl-bar {
@@ -87,6 +91,110 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-loop {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hooks for the GSAP effects in app/page.tsx. The script generates
+   these class names at runtime (line splitting, typed eyebrows, the
+   FAQ accordion), so without these rules the elements render unmasked
+   and collapsed FAQ answers overflow their container.
+   ------------------------------------------------------------------ */
+
+/* splitLines() wraps each measured line in .line-mask > .line-inner and
+   animates the inner element's yPercent, so the mask must clip it. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.line-inner {
+  display: block;
+  will-change: transform;
+}
+
+/* splitWords() output — inline-block so per-word transforms apply. */
+.word {
+  display: inline-block;
+}
+
+/* Collapsible FAQ answer: height is animated from 0, so it must clip. */
+.faq-body {
+  overflow: hidden;
+}
+
+.faq-plus path:last-child {
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq-item.is-open .faq-plus path:last-child {
+  transform: scaleY(0);
+}
+
+/* Typed eyebrow: a hidden ghost reserves the final width so the line
+   never reflows while the live text types in over it. */
+[data-type] {
+  position: relative;
+}
+
+.type-ghost {
+  visibility: hidden;
+}
+
+.type-live {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  opacity: 0;
+}
+
+.caret.is-live {
+  opacity: 0.9;
+  animation: caret-blink 0.9s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Animated underline on inline text links. */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret.is-live {
     animation: none;
   }
 }

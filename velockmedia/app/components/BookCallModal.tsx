@@ -10,6 +10,15 @@ type Props = {
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const ORG_TYPES = [
+  "Recruitment program / college",
+  "Academy",
+  "Event organizer",
+  "League",
+  "Team / club",
+  "Other",
+];
+
 export default function BookCallModal({ open, onClose }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,6 +67,8 @@ export default function BookCallModal({ open, onClose }: Props) {
       email: String(data.get("email") || ""),
       phone: String(data.get("phone") || ""),
       company: String(data.get("company") || ""),
+      orgType: String(data.get("orgType") || ""),
+      sport: String(data.get("sport") || ""),
       message: String(data.get("message") || ""),
     };
 
@@ -109,7 +120,7 @@ export default function BookCallModal({ open, onClose }: Props) {
             </div>
             <h2 className="font-display mt-5 text-2xl font-medium tracking-[-0.02em]">Request received</h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
-              Thanks — someone from our team will reach out shortly to confirm a time.
+              Thanks — we&apos;ll read it properly and come back to you to arrange a time.
             </p>
             <button
               type="button"
@@ -121,12 +132,13 @@ export default function BookCallModal({ open, onClose }: Props) {
           </div>
         ) : (
           <>
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Book a call</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Discovery call</p>
             <h2 id="bookCallTitle" className="font-display mt-3 text-2xl font-medium tracking-[-0.02em]">
-              Let&apos;s talk about your shoot.
+              Let&apos;s talk about your media.
             </h2>
             <p className="mt-2 text-sm leading-6 text-white/55">
-              Share a few details and we&apos;ll follow up to schedule a time that works.
+              Tell us about your organization, project, event or season. We&apos;ll take a look and work out whether Veloc
+              is the right fit.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-3">
@@ -165,22 +177,52 @@ export default function BookCallModal({ open, onClose }: Props) {
                 />
               </div>
               <div>
-                <label htmlFor="bc-company" className="sr-only">Company (optional)</label>
+                <label htmlFor="bc-company" className="sr-only">Organization</label>
                 <input
                   id="bc-company"
                   name="company"
                   type="text"
-                  placeholder="Company (optional)"
+                  placeholder="Organization"
                   className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-acid"
                 />
               </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="bc-org-type" className="sr-only">Organization type</label>
+                  <select
+                    id="bc-org-type"
+                    name="orgType"
+                    defaultValue=""
+                    className="w-full appearance-none rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none focus:border-acid"
+                  >
+                    <option value="" disabled className="bg-neutral-900">
+                      Organization type
+                    </option>
+                    {ORG_TYPES.map((t) => (
+                      <option key={t} value={t} className="bg-neutral-900">
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="bc-sport" className="sr-only">Sport</label>
+                  <input
+                    id="bc-sport"
+                    name="sport"
+                    type="text"
+                    placeholder="Sport"
+                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-acid"
+                  />
+                </div>
+              </div>
               <div>
-                <label htmlFor="bc-message" className="sr-only">What are you looking to shoot?</label>
+                <label htmlFor="bc-message" className="sr-only">What do you need help with?</label>
                 <textarea
                   id="bc-message"
                   name="message"
-                  rows={3}
-                  placeholder="What are you looking to shoot? (optional)"
+                  rows={4}
+                  placeholder="Your sport, and what you need help with"
                   className="w-full resize-none rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:border-acid"
                 />
               </div>
@@ -197,7 +239,7 @@ export default function BookCallModal({ open, onClose }: Props) {
                     <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} /> Sending
                   </>
                 ) : (
-                  "Send request"
+                  "Start the conversation"
                 )}
               </button>
             </form>

@@ -8,74 +8,83 @@ export type CaseStudy = {
   title: string;
   summary: string;
   image: string;
+  /** What did the client need? */
   challenge: string;
+  /** What did the content need to accomplish, and how did we approach it? */
   solution: string;
+  /** Only verified, measurable outcomes. Leave empty rather than estimating. */
   results: { label: string; value: string }[];
 };
 
+/**
+ * Local fallback used when Sanity is not configured — real case studies are
+ * authored as Case Study documents in the Studio and override everything here.
+ *
+ * These four entries keep the page structure intact while describing only how
+ * Veloc approaches each kind of project. Anything that would be a *claim* —
+ * the client's name, the year, the outcome numbers — is left as a bracketed
+ * placeholder or empty, because no client, project or result may appear on the
+ * site unless it is real and approved. `results: []` hides the outcomes strip
+ * on the detail page rather than showing an invented figure.
+ */
 export const CASE_STUDIES: CaseStudy[] = [
   {
-    slug: "sunridge-outdoors",
-    client: "Sunridge Outdoors",
-    category: "Brand Film",
-    year: "2025",
-    title: "Turning a gear launch into a golden-hour story.",
-    summary: "A single-day shoot with the NIVO One kit became a 6-part launch campaign for Sunridge's new trail line.",
+    slug: "recruitment-highlight-package",
+    client: "[ADD CLIENT]",
+    category: "Athlete Recruitment Media",
+    year: "[YEAR]",
+    title: "Recruitment reels built for the first ten seconds.",
+    summary:
+      "A recruitment package where every reel had to show an athlete's ability clearly enough for a coach to judge it fast.",
     image: PLACEHOLDER_IMAGES.goldenHour,
-    challenge: "Sunridge needed a launch film that felt native to the outdoors, not staged in a studio, on a two-day production window.",
-    solution: "We paired a lightweight NIVO rig with a two-person crew to shoot handheld, run-and-gun footage across three locations in a single day.",
-    results: [
-      { label: "Launch views", value: "1.2M" },
-      { label: "Turnaround", value: "9 days" },
-      { label: "Deliverables", value: "6 cuts" },
-    ],
+    challenge:
+      "[ADD THE REAL BRIEF] — what the organization needed, how many athletes were involved, and what was working against them (footage quality, deadlines, recruiting windows).",
+    solution:
+      "We start by establishing what the reel has to prove about the athlete, then cut to that: the position-specific reads first, clean identification of the player on every clip, and a length that respects how these are actually watched.",
+    results: [],
   },
   {
-    slug: "wanderfolk-travel",
-    client: "Wanderfolk",
-    category: "Social Content",
-    year: "2025",
-    title: "A creator-style travel series shot entirely on a phone rig.",
-    summary: "Wanderfolk needed 30 days of daily content from a single traveling creator with no crew.",
-    image: PLACEHOLDER_IMAGES.travel,
-    challenge: "One creator, one bag, thirty days — no room for a full production kit or a second set of hands.",
-    solution: "We built a one-person capture workflow around the NIVO One and Mic Mini, with same-day edit templates for consistent daily posting.",
-    results: [
-      { label: "Episodes", value: "30" },
-      { label: "Avg. watch time", value: "78%" },
-      { label: "New followers", value: "44K" },
-    ],
-  },
-  {
-    slug: "afterglow-sessions",
-    client: "Afterglow Sessions",
-    category: "Live Music",
-    year: "2024",
-    title: "Multi-angle live coverage without a full multicam truck.",
-    summary: "A recurring concert series needed broadcast-quality coverage on an indie budget.",
+    slug: "event-recap-package",
+    client: "[ADD CLIENT]",
+    category: "Event Media Operations",
+    year: "[YEAR]",
+    title: "One weekend of footage, a season of media.",
+    summary:
+      "Turning a single event's capture into a recap film, competitor highlights, sponsor deliverables and social cuts.",
     image: PLACEHOLDER_IMAGES.liveSet,
-    challenge: "Afterglow's venue had no room for a multicam truck, and the budget didn't allow for a large crew.",
-    solution: "We ran a compact three-camera NIVO setup with wireless audio capture, mixed live and finished same-night.",
-    results: [
-      { label: "Shows covered", value: "18" },
-      { label: "Crew size", value: "2" },
-      { label: "Same-night delivery", value: "100%" },
-    ],
+    challenge:
+      "[ADD THE REAL BRIEF] — the event, its scale, what the organizer needed the media to do afterwards, and any sponsor obligations.",
+    solution:
+      "An event shouldn't end when the final whistle does. We plan the deliverable set before the footage lands, then work through it as one pass so the recap, the athlete cuts and the sponsor assets all come out of the same edit.",
+    results: [],
   },
   {
-    slug: "northline-podcast",
-    client: "Northline Podcast Co.",
-    category: "Interview",
-    year: "2024",
-    title: "Studio-grade interviews recorded on location, every week.",
-    summary: "A weekly interview show needed consistent, broadcast-clean audio and video across changing locations.",
+    slug: "league-season-content",
+    client: "[ADD CLIENT]",
+    category: "League & Team Media",
+    year: "[YEAR]",
+    title: "Week twenty has to look like week one.",
+    summary: "Weekly match highlights, player cuts and scoreboard content produced across a full season.",
+    image: PLACEHOLDER_IMAGES.travel,
+    challenge:
+      "[ADD THE REAL BRIEF] — the league or club, the fixture volume, the turnaround expected between match and publish.",
+    solution:
+      "Season-long work is a systems problem, not an editing problem. We fix the templates, the naming and the review loop up front so the twentieth match is handled exactly like the first.",
+    results: [],
+  },
+  {
+    slug: "ongoing-media-partnership",
+    client: "[ADD CLIENT]",
+    category: "Ongoing Media Partnerships",
+    year: "[YEAR]",
+    title: "Becoming the media department.",
+    summary:
+      "A standing engagement where the organization routes its media through us instead of re-briefing an editor each time.",
     image: PLACEHOLDER_IMAGES.interview,
-    challenge: "Guests were interviewed in different offices and homes each week, with no time for a lighting or audio setup.",
-    solution: "A standardized NIVO travel kit and a 20-minute setup checklist kept every episode consistent, regardless of location.",
-    results: [
-      { label: "Episodes shot", value: "52" },
-      { label: "Setup time", value: "20 min" },
-      { label: "Reshoots", value: "0" },
-    ],
+    challenge:
+      "[ADD THE REAL BRIEF] — what the organization was doing before, and what kept breaking about it.",
+    solution:
+      "Dedicated creative capacity on a monthly or seasonal basis, with one point of contact and a workflow that carries context between projects, so nothing has to be explained twice.",
+    results: [],
   },
 ];

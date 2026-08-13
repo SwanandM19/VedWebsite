@@ -6,15 +6,14 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { PLACEHOLDER_IMAGES } from "./components/placeholders";
 import {
   Aperture,
   Menu,
-  X as XIcon,
   ArrowDownRight,
   Play,
   ArrowDown,
   PackageOpen,
-  ShoppingBag,
   ArrowUpRight,
   ArrowRight,
   Mail,
@@ -26,17 +25,17 @@ import {
 import { useBookCall } from "./components/BookCallProvider";
 
 /**
- * NIVO — Pocket Creator Camera & Wireless Microphone
+ * Veloc Media — Sports Media Operations
  *
- * Ported from a static HTML build to a Next.js (App Router) client component.
+ * Homepage. Animated with GSAP + Lenis; the section ids and data-* attributes
+ * below are read by the scroll effects in the effect hook, so keep them stable.
  *
- * Setup notes:
- * 1. npm install gsap lenis lucide-react
- * 2. Add the custom colors to tailwind.config.{js,ts}:
- *      theme: { extend: { colors: { ink: "#08090A", acid: "#C8FF3D" },
- *        fontFamily: { display: ['"Inter Tight"', "Inter", "ui-sans-serif", "system-ui", "sans-serif"] } } }
- * 3. Load "Inter" and "Inter Tight" (e.g. via next/font/google) in your root layout.
- * 4. Replace the placeholder video/image URLs with your own asset hosting.
+ * CONTENT RULE: nothing here may claim a client, statistic, review or outcome
+ * that has not been verified. Unverified values ship as bracketed placeholders
+ * ("[X]+", "[ADD REAL TESTIMONIAL]") so they are obvious and greppable.
+ *
+ * IMAGERY: still the placeholder stock from the original build — see
+ * app/components/placeholders.ts. Swap for real Veloc project stills.
  */
 
 const HERO_VIDEO_SRC =
@@ -47,27 +46,46 @@ const HERO_POSTER =
 const APERTURE_BACKDROP =
   "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0b747a96-4f78-4e4e-8152-d26201955a6b_3840w.png";
 
+// [ADD VERIFIED NUMBERS] — every value must come from real Upwork / project
+// records before launch. Bracketed placeholders ship rather than invented
+// figures, which is also why these are not animated counters.
+const PROOF_STATS = [
+  { value: "[X]+", label: "Sports projects delivered" },
+  { value: "[X.X]", label: "Upwork rating" },
+  { value: "[X]%", label: "Job success score" },
+  { value: "[X]+", label: "Sports worked in" },
+];
+
+// [ADD REAL TESTIMONIALS] — only verified client reviews (e.g. from Upwork)
+// belong here. While this is empty the reviews section keeps its place on the
+// page but shows a visible placeholder instead of an invented quote.
+const TESTIMONIALS: { quote: string; initials: string; bg: string; fg: string; name: string; role: string }[] = [];
+
 const FAQS = [
   {
-    q: "What is in the NIVO One Creator Kit?",
-    a: "Camera body, Mic Mini capsule, dual-channel receiver, charging case, 0.62× wide-angle adapter, folding mini tripod, wrist strap, carry case and a USB-C cable.",
+    q: "What types of sports organizations do you work with?",
+    a: "Three groups: recruitment organizations (colleges, athletic departments, academies, recruiting programs, teams and coaches), event organizers (fitness competitions, boxing and MMA promotions, tournaments and multi-sport events), and leagues, clubs and teams producing content across a season.",
     open: true,
   },
   {
-    q: "Does it work with my phone and laptop?",
-    a: "Yes. The receiver is USB-C and class-compliant, so it works with iOS, Android, macOS and Windows without drivers. Footage transfers over USB-C or Wi-Fi to the NIVO app.",
+    q: "What kind of media do you produce?",
+    a: "Recruitment and athlete showcase videos, event recap films and hype edits, match and player highlights, scoreboard-integrated content, season recaps, social-ready cuts and sponsor deliverables.",
   },
   {
-    q: "How long does the battery actually last?",
-    a: "Around 9 hours of continuous 4K30 recording, or roughly 5 hours at 4K60 with stabilization active. The charging case adds three more full cycles.",
+    q: "Can you work with footage we already have?",
+    a: "Yes — that is the core of what we do. We are a post-production operation. Send us what your team, your venue or your broadcast partner captured and we take it from there.",
   },
   {
-    q: "Is it weather-sealed?",
-    a: "The body and the mic capsule are IP54 rated — fine for rain, dust and coastal spray. They are not designed for submersion.",
+    q: "Can you support us through a full season?",
+    a: "Yes. Ongoing media partnerships are a deliberate part of how we work: monthly or seasonal support, recurring event coverage and dedicated creative capacity, so the standard holds from the first fixture to the last.",
   },
   {
-    q: "When does it ship, and what about returns?",
-    a: "Kits ship free within 48 hours during the launch window. Returns are open for 30 days, and every kit carries a 2-year creator warranty.",
+    q: "How does the process work?",
+    a: "Understand, plan, produce, review, deliver. We start by learning the sport, the organization and the objective, agree what needs to be created, execute the post-production, run it through quality control and your feedback, then deliver organized final assets. For ongoing clients, that loop becomes a repeatable operation.",
+  },
+  {
+    q: "How do we get started?",
+    a: "Book a discovery call. Tell us about your organization, your event or your season, and we'll work out together whether Veloc is the right fit.",
   },
 ];
 
@@ -86,7 +104,6 @@ export default function NivoPage() {
     const root = rootRef.current;
     if (!root) return;
 
-    const hasGSAP = true;
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -226,7 +243,7 @@ export default function NivoPage() {
         const pre = preloaderRef.current;
         const panel = plPanelRef.current;
         if (!pre || !panel) return;
-        const phases = ["Calibrating optics", "Loading footage", "Balancing audio", "Ready to roll"];
+        const phases = ["Loading", "Syncing footage", "Checking audio", "Ready"];
         const counter = { v: 0 };
 
         gsap
@@ -1035,13 +1052,13 @@ export default function NivoPage() {
   }, []);
 
   return (
-    <div ref={rootRef} className="bg-white font-sans text-neutral-900 antialiased selection:bg-lime-200 selection:text-neutral-950">
+    <div ref={rootRef} className="bg-white font-sans text-neutral-900 antialiased selection:bg-acid selection:text-ink">
       {/* ============ PRELOADER ============ */}
       <div id="preloader" ref={preloaderRef} className="fixed inset-0 z-[200] grid place-items-center bg-ink">
         <div className="w-full px-6 text-white">
           <div className="mx-auto flex max-w-[420px] items-end justify-between pb-5">
             <span id="plWord" className="font-display text-[11px] uppercase tracking-[0.34em] text-white/50">
-              Calibrating optics
+              Loading
             </span>
             <span className="font-display text-[11px] tabular-nums tracking-[0.2em] text-white/80">
               <span id="plNum">0</span>%
@@ -1051,7 +1068,7 @@ export default function NivoPage() {
             <span id="plFill" />
           </div>
           <div className="mx-auto mt-6 max-w-[420px] overflow-hidden">
-            <p className="font-display text-[10px] uppercase tracking-[0.34em] text-white/25">NIVO — Create anywhere</p>
+            <p className="font-display text-[10px] uppercase tracking-[0.34em] text-white/25">Veloc Media — Sports Media Operations</p>
           </div>
         </div>
       </div>
@@ -1076,7 +1093,7 @@ export default function NivoPage() {
 >
   <img
     src="/WhiteLogo.png"
-    alt="NIVO"
+    alt="Veloc Media"
     className="h-10 w-auto object-contain"
   />
 </a>
@@ -1152,7 +1169,7 @@ export default function NivoPage() {
               playsInline
               preload="metadata"
               loop
-              aria-label="Compact creator camera in a premium dark product composition"
+              aria-label="Veloc Media sports work showreel"
               className="absolute inset-0 h-[112%] w-full object-cover"
             />
           </div>
@@ -1164,21 +1181,22 @@ export default function NivoPage() {
             <div id="heroCopy" className="max-w-2xl text-white">
               <p className="mb-6 flex items-center gap-3 font-display text-[11px] font-medium uppercase tracking-[0.28em] text-acid" data-hero-el>
                 <span id="heroRule" className="h-px w-10 origin-left bg-acid" />
-                Create anywhere. Sound incredible.
+                Sports Media Operations
               </p>
               <h1 className="font-display max-w-2xl text-[13vw] font-medium leading-[0.88] tracking-[-0.03em] sm:text-6xl lg:text-[5.4rem]" data-split="lines">
-                Your complete creator studio. In your pocket.
+                Media operations for sports organizations.
               </h1>
               <p className="mt-8 max-w-lg text-base leading-7 text-white/65 sm:text-lg" data-hero-el>
-                Capture stabilized 4K video and studio-quality sound with one compact camera and wireless microphone system.
+                Professional media for events, leagues, teams and recruitment programs — delivered with the reliability
+                and sports understanding your organization deserves.
               </p>
               <div className="mt-10 flex flex-wrap gap-3" data-hero-el>
-                <a href="#lineup" data-magnetic data-cursor="Shop" className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:bg-acid">
-                  Shop the Creator Kit
+                <a href="#lineup" data-magnetic data-cursor="Services" className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition-colors hover:bg-acid">
+                  Explore our services
                   <ArrowDownRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:translate-y-0.5" strokeWidth={1.5} />
                 </a>
                 <a href="#gallery" data-magnetic data-cursor="Play" className="group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white backdrop-blur transition-colors hover:bg-white hover:text-ink">
-                  Watch the film
+                  See our work
                   <Play className="h-4 w-4" strokeWidth={1.5} />
                 </a>
               </div>
@@ -1186,7 +1204,7 @@ export default function NivoPage() {
           </div>
 
           <div className="pointer-events-none absolute bottom-7 left-5 hidden font-display text-[10px] uppercase tracking-[0.28em] text-white/40 sm:left-8 lg:left-10 lg:block" data-hero-el>
-            NIVO One · 4K60 · 3-Axis
+            Recruitment · Events · Leagues &amp; Teams
           </div>
           <div className="absolute bottom-7 right-5 hidden items-center gap-3 text-white/55 sm:right-8 lg:right-10 lg:flex" data-hero-el>
             <span className="font-display text-[10px] uppercase tracking-[0.28em]">Scroll to explore</span>
@@ -1201,12 +1219,12 @@ export default function NivoPage() {
           <div className="marquee edge-fade flex w-max will-change-transform" data-marquee data-speed="-0.6">
             {[0, 1].map((i) => (
               <div key={i} aria-hidden={i === 1} className="flex items-center gap-10 pr-10 font-display text-[12px] uppercase tracking-[0.22em] text-neutral-400">
-                <span>4K60 Cinematic</span><span className="text-acid">◆</span>
-                <span>3-Axis Stabilization</span><span className="text-acid">◆</span>
-                <span>AI Subject Tracking</span><span className="text-acid">◆</span>
-                <span>32-Bit Float Audio</span><span className="text-acid">◆</span>
-                <span>Low-Light Mode</span><span className="text-acid">◆</span>
-                <span>One-Tap Pairing</span><span className="text-acid">◆</span>
+                <span>Recruitment media</span><span className="text-acid">◆</span>
+                <span>Event recap films</span><span className="text-acid">◆</span>
+                <span>Match highlights</span><span className="text-acid">◆</span>
+                <span>Athlete showcase reels</span><span className="text-acid">◆</span>
+                <span>Season recaps</span><span className="text-acid">◆</span>
+                <span>Ongoing media partnerships</span><span className="text-acid">◆</span>
               </div>
             ))}
           </div>
@@ -1216,14 +1234,13 @@ export default function NivoPage() {
         {/* ============ 05 · LINEUP ============ */}
         <section id="lineup" className="relative bg-neutral-50 pb-[10vh] pt-20 sm:pt-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(03) — Meet the lineup</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(03) — What we do</p>
             <div className="mt-5 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
               <h2 className="font-display max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                One kit. Every story.
+                Four ways organizations work with us.
               </h2>
               <p className="max-w-sm text-base leading-7 text-neutral-600" data-reveal>
-                From daily vlogs to travel films, interviews, tutorials and live content — choose the setup that fits your
-                story.
+                Organized around what your organization needs to accomplish — not around the software we happen to open.
               </p>
             </div>
           </div>
@@ -1235,27 +1252,27 @@ export default function NivoPage() {
                   <img
                     data-parallax-img
                     src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0711a0c1-d01e-461b-a3a4-f1c870278629_3840w.png"
-                    alt="NIVO One compact creator camera"
+                    alt="Athlete recruitment media"
                     className="h-80 w-full scale-110 object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.16] lg:h-[30rem]"
                   />
                   <span className="absolute left-6 top-6 rounded-full bg-black/45 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur">01</span>
                 </div>
                 <div className="flex min-h-80 flex-col justify-between p-7 sm:p-10">
                   <div className="flex items-center justify-between border-b border-neutral-200 pb-5">
-                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Pocket creator camera</span>
-                    <span className="font-display text-sm tabular-nums">From $499</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Colleges · academies · recruiting programs</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Service 01</span>
                   </div>
                   <div className="py-10">
-                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">NIVO One Camera</h3>
+                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">Athlete Recruitment Media</h3>
                     <p className="mt-4 text-base leading-7 text-neutral-600">
-                      Shoot stabilized 4K video with fast autofocus, AI subject tracking, strong low-light performance and
-                      instant vertical recording.
+                      Recruitment highlight videos, player showcases, position-specific reels, season highlights and full
+                      recruitment media packages — built to communicate an athlete&apos;s ability clearly.
                     </p>
                   </div>
-                  <a href="#tech" data-cursor="Open" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
-                    Explore NIVO One
+                  <button type="button" onClick={openBookCall} data-cursor="Talk" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
+                    Discuss a recruitment project
                     <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-                  </a>
+                  </button>
                 </div>
               </div>
             </article>
@@ -1266,27 +1283,27 @@ export default function NivoPage() {
                   <img
                     data-parallax-img
                     src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/ee86ccc6-e7a9-4a81-a328-5c5894aa8e48_3840w.png"
-                    alt="NIVO Mic Mini wireless creator microphone"
+                    alt="Event media operations"
                     className="h-80 w-full scale-110 object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.16] lg:h-[30rem]"
                   />
                   <span className="absolute left-6 top-6 rounded-full bg-black/45 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur">02</span>
                 </div>
                 <div className="flex min-h-80 flex-col justify-between p-7 sm:p-10">
                   <div className="flex items-center justify-between border-b border-neutral-200 pb-5">
-                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Wireless creator audio</span>
-                    <span className="font-display text-sm tabular-nums">From $149</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Fitness · combat sports · tournaments</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Service 02</span>
                   </div>
                   <div className="py-10">
-                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">NIVO Mic Mini</h3>
+                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">Event Media Operations</h3>
                     <p className="mt-4 text-base leading-7 text-neutral-600">
-                      Capture clean, balanced sound with intelligent noise reduction, one-tap pairing, backup recording and a
-                      compact magnetic clip.
+                      Event recap films, competitor highlights, hype and promotional edits, social clips, sponsor
+                      deliverables and awards edits. An event shouldn&apos;t end when the final whistle does.
                     </p>
                   </div>
-                  <a href="#tech" data-cursor="Open" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
-                    Explore Mic Mini
+                  <button type="button" onClick={openBookCall} data-cursor="Talk" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
+                    Discuss an event
                     <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-                  </a>
+                  </button>
                 </div>
               </div>
             </article>
@@ -1297,26 +1314,57 @@ export default function NivoPage() {
                   <img
                     data-parallax-img
                     src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/7b477bfa-78bb-42fe-b3a1-d23ddac27768_3840w.png"
-                    alt="Complete NIVO creator camera kit and accessories"
+                    alt="League and team media"
                     className="h-80 w-full scale-110 object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.16] lg:h-[30rem]"
                   />
-                  <span className="absolute left-6 top-6 rounded-full bg-acid px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.2em] text-ink">03 · Best value</span>
+                  <span className="absolute left-6 top-6 rounded-full bg-acid px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.2em] text-ink">03 · Season-long</span>
                 </div>
                 <div className="flex min-h-80 flex-col justify-between p-7 sm:p-10">
                   <div className="flex items-center justify-between border-b border-white/15 pb-5">
-                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-white/45">Complete all-in-one setup</span>
-                    <span className="font-display text-sm tabular-nums">$649</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-white/45">Leagues · clubs · teams · academies</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-white/45">Service 03</span>
                   </div>
                   <div className="py-10">
-                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">NIVO One Creator Kit</h3>
+                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">League &amp; Team Media</h3>
                     <p className="mt-4 text-base leading-7 text-white/60">
-                      Camera, Mic Mini, receiver, charging case, wide-angle lens, mini tripod, wrist strap, carrying case and
-                      USB-C cable.
+                      Match and game highlights, scoreboard-integrated content, player highlights, weekly match content and
+                      season recaps — produced to the same standard in week one and week twenty.
                     </p>
                   </div>
                   <button type="button" onClick={openBookCall} data-magnetic data-cursor="Add" className="inline-flex w-fit items-center gap-2 rounded-full bg-acid px-5 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white">
-                    Add Creator Kit to cart
-                    <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+                    Discuss your season
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article className="stack-card sticky top-[18vh]" data-stack-card>
+              <div className="group grid overflow-hidden rounded-[2rem] border border-neutral-200 bg-white lg:grid-cols-[1.3fr_0.7fr]">
+                <div className="relative overflow-hidden">
+                  <img
+                    data-parallax-img
+                    src={PLACEHOLDER_IMAGES.onLocation}
+                    alt="Ongoing media partnership"
+                    className="h-80 w-full scale-110 object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.16] lg:h-[30rem]"
+                  />
+                  <span className="absolute left-6 top-6 rounded-full bg-black/45 px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur">04</span>
+                </div>
+                <div className="flex min-h-80 flex-col justify-between p-7 sm:p-10">
+                  <div className="flex items-center justify-between border-b border-neutral-200 pb-5">
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">The relationship model</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-neutral-400">Service 04</span>
+                  </div>
+                  <div className="py-10">
+                    <h3 className="font-display text-2xl font-medium tracking-[-0.02em]">Ongoing Media Partnerships</h3>
+                    <p className="mt-4 text-base leading-7 text-neutral-600">
+                      Monthly and seasonal media support, recurring event coverage and dedicated creative capacity. For
+                      organizations that would rather have a media team than hire an editor.
+                    </p>
+                  </div>
+                  <button type="button" onClick={openBookCall} data-cursor="Talk" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
+                    Discuss a partnership
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
@@ -1327,16 +1375,16 @@ export default function NivoPage() {
         {/* ============ 06 · HORIZONTAL GALLERY ============ */}
         <section id="gallery" className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-3xl px-5 pt-24 text-center sm:px-8 sm:pt-32">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-white/40" data-reveal>(04) — Shot on NIVO One</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-white/40" data-reveal>(04) — Who we serve</p>
             <h2 className="font-display mt-5 text-4xl font-medium tracking-[-0.03em] sm:text-5xl" data-split="lines">
-              Professional video without the production setup.
+              Built for organizations, not one-off briefs.
             </h2>
             <p className="mt-6 text-base leading-7 text-white/55" data-reveal>
-              Smooth footage, sharp focus and rich detail in a camera small enough to carry every day. Switch from landscape
-              to portrait in seconds.
+              Three kinds of organizations bring us the majority of their media. If one of them describes you, we already
+              understand most of the problem.
             </p>
             <div className="mt-9 flex flex-wrap justify-center gap-2.5" data-stagger>
-              {["4K cinematic video", "3-axis stabilization", "AI subject tracking", "Low-light mode"].map((t) => (
+              {["Recruitment programs", "Event organizers", "Leagues & teams", "Ongoing partners"].map((t) => (
                 <span key={t} className="rounded-full border border-white/20 px-4 py-2 font-display text-[10px] uppercase tracking-[0.18em] text-white/70">{t}</span>
               ))}
             </div>
@@ -1346,10 +1394,10 @@ export default function NivoPage() {
             <div className="flex h-full items-center overflow-hidden">
               <div id="hTrack" className="flex w-max items-center gap-5 px-5 sm:gap-7 sm:px-[12vw]">
                 {[
-                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/cdef4873-8fea-4115-8a82-006a32e63f52_3840w.png", alt: "Creator filming cinematic video outdoors", cap: "Golden hour · handheld", n: "01", w: "sm:w-[34rem]", h: "h-[46vh] sm:h-[26rem]" },
-                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8f231664-7b31-4a1f-8e19-f18dd34d436f_3840w.png", alt: "Travel creator recording on location", cap: "Travel · 0.62× wide", n: "02", w: "sm:w-[26rem]", h: "h-[56vh] sm:h-[32rem]" },
-                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/b739edad-d484-48c1-8cef-883153b95f4e_3840w.png", alt: "Live creator production scene", cap: "Low light · ISO 6400", n: "03", w: "sm:w-[34rem]", h: "h-[46vh] sm:h-[26rem]" },
-                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0eca95bb-6ae2-4781-8e51-dc99c29cea24_3840w.png", alt: "Independent creator recording content", cap: "Interview · dual mic", n: "04", w: "sm:w-[26rem]", h: "h-[56vh] sm:h-[32rem]" },
+                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/cdef4873-8fea-4115-8a82-006a32e63f52_3840w.png", alt: "Recruitment and athlete showcase media", cap: "Recruitment · athlete reels", n: "01", w: "sm:w-[34rem]", h: "h-[46vh] sm:h-[26rem]" },
+                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/8f231664-7b31-4a1f-8e19-f18dd34d436f_3840w.png", alt: "Event media operations", cap: "Events · recap films", n: "02", w: "sm:w-[26rem]", h: "h-[56vh] sm:h-[32rem]" },
+                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/b739edad-d484-48c1-8cef-883153b95f4e_3840w.png", alt: "League and team media", cap: "Leagues · match highlights", n: "03", w: "sm:w-[34rem]", h: "h-[46vh] sm:h-[26rem]" },
+                  { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0eca95bb-6ae2-4781-8e51-dc99c29cea24_3840w.png", alt: "Ongoing media partnership", cap: "Season-long · ongoing", n: "04", w: "sm:w-[26rem]", h: "h-[56vh] sm:h-[32rem]" },
                 ].map((fig) => (
                   <figure key={fig.n} className={`relative w-[78vw] overflow-hidden rounded-2xl ${fig.w}`}>
                     <img data-parallax-img src={fig.src} alt={fig.alt} className={`w-full scale-110 object-cover ${fig.h}`} />
@@ -1360,10 +1408,10 @@ export default function NivoPage() {
                   </figure>
                 ))}
                 <div className="flex w-[70vw] shrink-0 flex-col justify-center gap-5 pr-5 sm:w-[24rem]">
-                  <p className="font-display text-3xl font-medium leading-[1.1] tracking-[-0.03em] sm:text-4xl">Every frame, straight out of camera.</p>
-                  <a href="#stories" data-magnetic data-cursor="More" className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 px-5 py-3 font-display text-[10px] uppercase tracking-[0.18em] transition hover:bg-white hover:text-ink">
-                    See creator stories <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
-                  </a>
+                  <p className="font-display text-3xl font-medium leading-[1.1] tracking-[-0.03em] sm:text-4xl">Not sure where you fit? Tell us what you&apos;re trying to achieve.</p>
+                  <button type="button" onClick={openBookCall} data-magnetic data-cursor="Talk" className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 px-5 py-3 font-display text-[10px] uppercase tracking-[0.18em] transition hover:bg-white hover:text-ink">
+                    Start a conversation <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -1379,22 +1427,22 @@ export default function NivoPage() {
         {/* ============ 08 · CREATOR STORIES ============ */}
         <section id="stories" className="overflow-hidden bg-white py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-type>(06) — Creator stories</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-type>(06) — Why Veloc</p>
             <div className="mt-5 flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <h2 className="font-display max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-type data-type-delay="0.45">
-                Over 100,000 creators, each shooting their own way.
+                A normal editor waits for a brief. We start with the objective.
               </h2>
-              <a href="#support" data-cursor="Join" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
-                Join the community <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-              </a>
+              <Link href="/about" data-cursor="About" className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium">
+                See how we work <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              </Link>
             </div>
 
             <div className="mt-16 grid gap-x-8 gap-y-16 md:grid-cols-2">
               {[
-                { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png", alt: "Travel creator filming a coastal road", eyebrow: "Travel film · Iceland", title: "Ring Road, one hand", body: "Eight days, no tripod, no second body. Shot entirely handheld at 4K60 with the gimbal doing the steadying.", n: "01", rounded: "rounded-[2rem]", mt: "" },
-                { src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90", alt: "Creator recording a street interview", eyebrow: "Street interviews · Tokyo", title: "Two mics, zero retakes", body: "Dual-channel wireless with on-capsule backup recording — the Shibuya crossing never once ruined a take.", n: "02", rounded: "rounded-[3.5rem] rounded-bl-2xl", mt: "md:mt-24" },
-                { src: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1300&q=90", alt: "Studio tutorial being filmed", eyebrow: "Tutorials · Berlin", title: "A studio on a desk", body: "Subject tracking keeps the frame locked while the host moves between the bench and the whiteboard.", n: "03", rounded: "rounded-[2rem]", mt: "" },
-                { src: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1300&q=90", alt: "Night city creator shoot", eyebrow: "Night series · Lisbon", title: "After the sun goes", body: "Dual-native ISO and f/1.6 turn empty streets into a usable set long after the light is gone.", n: "04", rounded: "rounded-[3.5rem] rounded-tr-2xl", mt: "md:mt-24" },
+                { src: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png", alt: "Sports media operations", eyebrow: "Sports understanding", title: "We know what we’re watching", body: "We don’t treat sports footage like generic footage. The context, the pace, the competition and the purpose behind the content all change how it should be cut.", n: "01", rounded: "rounded-[2rem]", mt: "" },
+                { src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90", alt: "Planning the objective before the edit", eyebrow: "Purpose before production", title: "The objective decides the edit", body: "Before anything gets cut, we establish what the content has to accomplish. A recruitment reel and an event hype film are not the same job.", n: "02", rounded: "rounded-[3.5rem] rounded-bl-2xl", mt: "md:mt-24" },
+                { src: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1300&q=90", alt: "Repeatable post-production workflow", eyebrow: "Reliability & systems", title: "Repeatable, not heroic", body: "Professional execution, clear communication and delivering when we said we would are the product. We build workflows, so quality never depends on one person having a good week.", n: "03", rounded: "rounded-[2rem]", mt: "" },
+                { src: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1300&q=90", alt: "Long-term media partnership", eyebrow: "Long-term partnership", title: "A media team, not a vendor", body: "We want to be the team you rely on across a season and beyond — not the editor you hire for one video and re-brief every time.", n: "04", rounded: "rounded-[3.5rem] rounded-tr-2xl", mt: "md:mt-24" },
               ].map((s) => (
                 <article key={s.n} className={`group ${s.mt}`} data-story>
                   <div className={`overflow-hidden ${s.rounded}`} data-clip>
@@ -1418,36 +1466,26 @@ export default function NivoPage() {
         <section id="products" className="border-t border-neutral-200 bg-white py-20 sm:py-28">
           <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
             <div>
-              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(02) — Built to travel</p>
+              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(02) — Track record</p>
               <h2 className="font-display mt-5 max-w-lg text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                Studio standards. Backpack footprint.
+                Experience earned on real sports work.
               </h2>
               <p className="mt-7 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                NIVO One was engineered around a single constraint: everything a creator needs has to fit in one hand. A
-                stabilized sensor, a wireless mic system, and a battery that outlasts the shoot.
+                Veloc grew out of sports video editing work delivered for clients on Upwork — recruitment reels, event
+                footage and match content, reviewed by the people who commissioned it.
               </p>
               <p className="mt-4 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                No rig. No cage. No crew. Pull it out, press record, and the footage is already graded, framed, and mixed the
-                way you would have done it in post.
+                That is the foundation the company is built on: repeatable post-production for sports organizations, run
+                as an operation rather than a series of favours.
               </p>
 
               <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4" data-stagger>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="118" data-suffix="g">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Body weight</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="4" data-suffix="K60">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Cinematic capture</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="240" data-suffix="m">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Wireless mic range</p>
-                </div>
-                <div className="border-t border-neutral-900/15 pt-4">
-                  <p className="font-display text-4xl font-medium tracking-[-0.04em]"><span data-count="9" data-suffix="h">0</span></p>
-                  <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">Battery, recording</p>
-                </div>
+                {PROOF_STATS.map((stat) => (
+                  <div key={stat.label} className="border-t border-neutral-900/15 pt-4">
+                    <p className="font-display text-4xl font-medium tracking-[-0.04em]">{stat.value}</p>
+                    <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -1459,17 +1497,17 @@ export default function NivoPage() {
               </div>
               <div className="relative flex h-full flex-col justify-between">
                 <div className="flex items-center justify-between">
-                  <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em]">In the box</span>
+                  <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em]">How an engagement runs</span>
                   <PackageOpen className="h-6 w-6 text-neutral-400" strokeWidth={1.5} />
                 </div>
                 <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
                   {[
-                    { t: "NIVO One", s: "4K camera body", dot: "bg-acid" },
-                    { t: "Mic Mini", s: "Wireless capsule", dot: "bg-acid" },
-                    { t: "Receiver", s: "USB-C dual-ch.", dot: "bg-acid" },
-                    { t: "Charge case", s: "3 full cycles", dot: "bg-neutral-300" },
-                    { t: "Wide lens", s: "0.62× adapter", dot: "bg-neutral-300" },
-                    { t: "Mini tripod", s: "Folds to grip", dot: "bg-neutral-300" },
+                    { t: "01 · Understand", s: "The sport, the org, the objective", dot: "bg-acid" },
+                    { t: "02 · Plan", s: "What gets made, how footage is handled", dot: "bg-acid" },
+                    { t: "03 · Produce", s: "Our team executes the post", dot: "bg-acid" },
+                    { t: "04 · Review", s: "Quality control, then your feedback", dot: "bg-neutral-300" },
+                    { t: "05 · Deliver", s: "Final assets, organized", dot: "bg-neutral-300" },
+                    { t: "06 · Continue", s: "It becomes a media operation", dot: "bg-neutral-300" },
                   ].map((item) => (
                     <div key={item.t} className="rounded-2xl border border-neutral-200 bg-white/90 p-4 shadow-sm backdrop-blur">
                       <span className={`mb-3 block h-1.5 w-1.5 rounded-full ${item.dot}`} />
@@ -1485,33 +1523,33 @@ export default function NivoPage() {
         {/* ============ 09 · REVIEWS ============ */}
         <section id="reviews" className="overflow-hidden border-y border-neutral-200 bg-neutral-50 py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Creator reviews</p>
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(07) — Client reviews</p>
             <h2 className="font-display mt-5 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-              Trusted by creators on the move.
+              What organizations say after working with us.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-neutral-500" data-reveal>
-              Real stories from people filming, sharing and building wherever inspiration takes them.
+              Verified reviews from the organizations whose media we handle.
             </p>
           </div>
 
-          <div className="mt-14 space-y-5">
-            <ReviewRow
-              speed="-0.5"
-              reviews={[
-                { quote: "NIVO lets me film professional travel content without carrying a full camera bag. I can set it up and start recording in seconds.", initials: "RK", bg: "bg-emerald-100", fg: "text-emerald-800", name: "Rhea Kapoor", role: "Travel creator · YouTube" },
-                { quote: "The tracking feels like having a camera operator with me. I can teach, move and stay perfectly framed while filming alone.", initials: "PS", bg: "bg-blue-100", fg: "text-blue-800", name: "Prayush Sinha", role: "Education creator · Instagram" },
-                { quote: "The Mic Mini handles busy streets surprisingly well. My voice stays clear, and the backup recording gives me complete confidence.", initials: "ML", bg: "bg-amber-100", fg: "text-amber-800", name: "Maya Lee", role: "Lifestyle creator · TikTok" },
-              ]}
-            />
-            <ReviewRow
-              speed="0.4"
-              reviews={[
-                { quote: "I shoot a weekly series solo. The kit replaced a gimbal, a shotgun mic and two lav packs — and it charges from the same cable as my laptop.", initials: "IA", bg: "bg-violet-100", fg: "text-violet-800", name: "Irfan Aga", role: "Documentary · Vimeo" },
-                { quote: "Vertical and horizontal from the same take. My editor stopped asking me to reshoot for the second platform.", initials: "MI", bg: "bg-cyan-100", fg: "text-cyan-800", name: "Mira Ingawale", role: "Food creator · Reels" },
-                { quote: "Nine hours of recording on one charge got me through a full festival day without hunting for an outlet.", initials: "NS", bg: "bg-rose-100", fg: "text-rose-800", name: "Nelson Sequeira", role: "Live events · Twitch" },
-              ]}
-            />
-          </div>
+          {TESTIMONIALS.length > 0 ? (
+            <div className="mt-14 space-y-5">
+              <ReviewRow speed="-0.5" reviews={TESTIMONIALS.slice(0, 3)} />
+              {TESTIMONIALS.length > 3 && <ReviewRow speed="0.4" reviews={TESTIMONIALS.slice(3, 6)} />}
+            </div>
+          ) : (
+            /* Placeholder, not a quote. Populate TESTIMONIALS with real,
+               client-approved reviews and the marquee above takes over. */
+            <div className="mx-auto mt-14 max-w-7xl px-5 sm:px-8 lg:px-10">
+              <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-12 text-center sm:px-12">
+                <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">[ADD REAL TESTIMONIALS]</p>
+                <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-500">
+                  Verified client reviews go here. We publish reviews as they are approved rather than writing them
+                  ourselves — ask us on a call and we will walk you through the feedback we have received so far.
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ============ 10 · FAQ ============ */}
@@ -1521,13 +1559,13 @@ export default function NivoPage() {
               <div className="lg:sticky lg:top-28 lg:self-start">
                 <p className="font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(08) — Questions</p>
                 <h2 className="font-display mt-5 max-w-xl text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                  Everything you need to know before you press record.
+                  What organizations usually ask us first.
                 </h2>
                 <p className="mt-6 max-w-lg text-base leading-7 text-neutral-600" data-reveal>
-                  Shipping, compatibility, warranty and what actually comes in the box.
+                  Who we work with, what we produce, and how an engagement actually runs.
                 </p>
                 <button type="button" onClick={openBookCall} data-magnetic data-cursor="Ask" className="mt-9 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white" data-reveal>
-                  Ask us anything <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                  Ask us directly <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
                 </button>
               </div>
 
@@ -1558,8 +1596,9 @@ export default function NivoPage() {
           <div className="mx-auto max-w-6xl px-5 py-[18vh] sm:px-8 lg:px-10">
             <p className="mb-10 font-display text-[11px] uppercase tracking-[0.28em] text-neutral-400" data-reveal>(01) — The idea</p>
             <p id="manifestoText" className="font-display text-[7.2vw] font-medium leading-[1.06] tracking-[-0.025em] text-neutral-900 sm:text-5xl lg:text-[3.6rem]">
-              A camera bag used to be the price of entry. We put the whole studio — optics, stabilization, and broadcast sound
-              — into something that disappears into your pocket. So the only thing left to carry is the idea.
+              Most editing agencies ask what video you want. We ask what you are trying to achieve — then we work out what
+              the content has to do, and execute it. The video is the deliverable. Trust, reliability and understanding the
+              sport are the product.
             </p>
           </div>
         </section>
@@ -1634,7 +1673,7 @@ export default function NivoPage() {
                   <g id="apKnurl" stroke="rgba(255,255,255,.16)" strokeWidth={0.55} />
 
                   <g id="apScale" fill="rgba(255,255,255,.42)" fontSize={5.2} fontFamily="Inter Tight, Inter, sans-serif" textAnchor="middle" letterSpacing={0.5} />
-                  <path d="M0 -100.5 L2.6 -105.5 L-2.6 -105.5 Z" fill="#C8FF3D" />
+                  <path d="M0 -100.5 L2.6 -105.5 L-2.6 -105.5 Z" fill="#ff6900" />
                 </svg>
               </div>
             </div>
@@ -1655,7 +1694,7 @@ export default function NivoPage() {
                     data-cursor="Book"
                     className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-acid px-7 py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-white"
                   >
-                    Book a call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                    Book a discovery call <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
@@ -1691,18 +1730,18 @@ export default function NivoPage() {
         {/* ============ 11 · STATEMENT ============ */}
         <section id="statement" className="relative overflow-hidden bg-neutral-100 py-24 sm:py-32">
           <div className="mx-auto max-w-6xl px-5 text-center sm:px-8">
-            <p className="text-sm text-neutral-500" data-reveal>Designed for the story you have not filmed yet.</p>
+            <p className="text-sm text-neutral-500" data-reveal>Understand first. Execute flawlessly.</p>
             <h2 className="font-display mx-auto mt-10 max-w-5xl text-[16vw] font-medium leading-[0.84] tracking-[-0.045em] text-neutral-900 sm:text-8xl lg:text-[9.5rem]" data-statement>
-              <span className="line-mask"><span className="line-inner">CREATE</span></span>
-              <span className="line-mask"><span className="line-inner">ANY</span></span>
-              <span className="line-mask"><span className="line-inner text-neutral-400">WHERE</span></span>
+              <span className="line-mask"><span className="line-inner">UNDER</span></span>
+              <span className="line-mask"><span className="line-inner">STAND</span></span>
+              <span className="line-mask"><span className="line-inner text-neutral-400">FIRST</span></span>
             </h2>
             <div className="mt-14 flex flex-wrap justify-center gap-3" data-stagger>
               <button type="button" onClick={openBookCall} data-magnetic data-cursor="Mail" className="inline-flex items-center gap-2 rounded-full border border-neutral-400 bg-white px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition hover:bg-ink hover:text-white">
-                Email us <Mail className="h-4 w-4" strokeWidth={1.5} />
+                Start a conversation <Mail className="h-4 w-4" strokeWidth={1.5} />
               </button>
-              <a href="#lineup" data-magnetic data-cursor="Buy" className="inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white">
-                Buy the Creator Kit <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+              <a href="#lineup" data-magnetic data-cursor="Services" className="inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white">
+                Explore our services <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
               </a>
             </div>
           </div>
@@ -1726,18 +1765,34 @@ export default function NivoPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-12 py-14 md:grid-cols-4 lg:gap-x-20" data-stagger>
-            <FooterCol title="Products" links={["NIVO One", "NIVO Mic Mini", "Creator Kit", "Accessories", "Compare products"]} hrefs={["#products", "#lineup", "#lineup", "#", "#"]} />
-            <FooterCol title="Creators" links={["Community", "Tutorials", "Creator stories", "Challenges", "Ambassador program"]} hrefs={["#stories", "#", "#", "#", "#"]} />
-            <FooterCol title="Support" links={["Help center", "Product setup", "Downloads", "Warranty", "Contact support"]} hrefs={["#faq", "#", "#", "#", "#"]} />
-            <FooterCol title="Company" links={["About NIVO", "Careers", "Press", "Sustainability", "Retail partners"]} hrefs={["#", "#", "#", "#", "#"]} />
+            <FooterCol
+              title="Services"
+              links={["Athlete recruitment media", "Event media operations", "League & team media", "Ongoing partnerships"]}
+              hrefs={["#lineup", "#lineup", "#lineup", "#lineup"]}
+            />
+            <FooterCol
+              title="Organizations"
+              links={["Recruitment programs", "Event organizers", "Leagues & teams", "Why Veloc"]}
+              hrefs={["#gallery", "#gallery", "#gallery", "#stories"]}
+            />
+            <FooterCol
+              title="Explore"
+              links={["Our work", "Case studies", "Track record", "FAQ"]}
+              hrefs={["/work", "/case-studies", "#products", "#faq"]}
+            />
+            <FooterCol
+              title="Company"
+              links={["About Veloc", "How we work", "Our standard", "The founder"]}
+              hrefs={["/about", "/about#process", "/about#principles", "/about#founder"]}
+            />
           </div>
 
           <div className="relative grid min-h-72 overflow-hidden pb-10 pt-6 lg:grid-cols-[0.9fr_1.5fr] lg:items-end">
             <div className="relative z-10 max-w-md">
               <h2 className="font-display text-2xl leading-tight tracking-[-0.02em] sm:text-3xl" data-split="lines">
-                Built for creators. Straight to your inbox.
+                Sports media notes, straight to your inbox.
               </h2>
-              <p className="mt-4 text-base leading-7 text-white/55" data-reveal>Product updates, creator tips and launch-only offers.</p>
+              <p className="mt-4 text-base leading-7 text-white/55" data-reveal>Occasional notes on recruitment, event and league media. No noise.</p>
               <form ref={formRef} id="subForm" className="mt-7 flex h-14 max-w-sm overflow-hidden rounded-xl border border-white/25 bg-white/[0.03] transition-colors focus-within:border-acid">
                 <label htmlFor="footer-email" className="sr-only">Enter your email</label>
                 <input
@@ -1771,7 +1826,7 @@ export default function NivoPage() {
                 className="absolute inset-x-0 bottom-0 whitespace-nowrap text-center font-display text-8xl font-light leading-none tracking-[-0.04em] sm:text-9xl lg:text-[12rem]"
                 style={{ WebkitTextStroke: "1px rgba(255,255,255,.14)", color: "rgba(255,255,255,.06)" }}
               >
-                NIVO
+                VELOC
               </p>
             </div>
           </div>
@@ -1780,8 +1835,8 @@ export default function NivoPage() {
         <div className="border-t border-white/15">
           <div className="mx-auto flex max-w-7xl flex-col gap-7 px-5 py-7 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
             <div className="flex items-center gap-5">
-              <a href="#top" aria-label="NIVO home" data-magnetic data-cursor="Top" className="grid h-12 w-12 place-items-center rounded-full border border-white/25 font-display text-2xl font-light transition hover:border-acid hover:text-acid">N</a>
-              <p className="text-sm text-white/50">© 2026 NIVO</p>
+              <a href="#top" aria-label="Veloc Media home" data-magnetic data-cursor="Top" className="grid h-12 w-12 place-items-center rounded-full border border-white/25 font-display text-2xl font-light transition hover:border-acid hover:text-acid">V</a>
+              <p className="text-sm text-white/50">© {new Date().getFullYear()} Veloc Media · A StateShift Ventures company</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <SocialIcon label="Instagram" cursor="Follow" path="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24s3.668-.014 4.948-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />

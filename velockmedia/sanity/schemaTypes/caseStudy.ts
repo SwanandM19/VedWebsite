@@ -21,13 +21,13 @@ export default defineType({
       title: "Cover image",
       type: "image",
       options: { hotspot: true },
-      validation: (r) => r.required(),
     }),
     defineField({ name: "challenge", title: "The challenge", type: "text", rows: 4 }),
-    defineField({ name: "solution", title: "The approach", type: "text", rows: 4 }),
+    defineField({ name: "solution", title: "The objective & approach", type: "text", rows: 4 }),
     defineField({
       name: "results",
       title: "Results",
+      description: "Only real, measurable outcomes the client has confirmed. Leave empty rather than estimating — the section is hidden when empty.",
       type: "array",
       of: [
         {
