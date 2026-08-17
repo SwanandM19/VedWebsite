@@ -8,6 +8,8 @@ export type CaseStudy = {
   title: string;
   summary: string;
   image: string;
+  /** YouTube link or direct file. Takes priority over `image` when set. */
+  video?: string;
   /** What did the client need? */
   challenge: string;
   /** What did the content need to accomplish, and how did we approach it? */
@@ -20,12 +22,12 @@ export type CaseStudy = {
  * Local fallback used when Sanity is not configured — real case studies are
  * authored as Case Study documents in the Studio and override everything here.
  *
- * These four entries keep the page structure intact while describing only how
- * Veloc approaches each kind of project. Anything that would be a *claim* —
- * the client's name, the year, the outcome numbers — is left as a bracketed
- * placeholder or empty, because no client, project or result may appear on the
- * site unless it is real and approved. `results: []` hides the outcomes strip
- * on the detail page rather than showing an invented figure.
+ * Each entry now links a real deliverable (`video`), so the copy is written
+ * around that specific piece of work. Anything that would be a *claim* we
+ * can't verify — the client's name, the year, outcome numbers — stays a
+ * bracketed placeholder or empty, because no client or result may appear on
+ * the site unless it is real and approved. `results: []` hides the outcomes
+ * strip on the detail page rather than showing an invented figure.
  */
 export const CASE_STUDIES: CaseStudy[] = [
   {
@@ -33,14 +35,15 @@ export const CASE_STUDIES: CaseStudy[] = [
     client: "[ADD CLIENT]",
     category: "Athlete Recruitment Media",
     year: "[YEAR]",
-    title: "Recruitment reels built for the first ten seconds.",
+    title: "A soccer recruitment tape built for the first ten seconds.",
     summary:
-      "A recruitment package where every reel had to show an athlete's ability clearly enough for a coach to judge it fast.",
+      "A recruitment tape where every clip had to show the athlete's ability clearly enough for a coach to judge it fast.",
     image: PLACEHOLDER_IMAGES.goldenHour,
+    video: "https://youtu.be/Pb99qRZGscU",
     challenge:
-      "[ADD THE REAL BRIEF] — what the organization needed, how many athletes were involved, and what was working against them (footage quality, deadlines, recruiting windows).",
+      "[ADD THE REAL BRIEF] — a soccer recruitment tape, cut from game footage the family already had, that needed to hold a coach's attention in the first few seconds and prove the player's ability without padding.",
     solution:
-      "We start by establishing what the reel has to prove about the athlete, then cut to that: the position-specific reads first, clean identification of the player on every clip, and a length that respects how these are actually watched.",
+      "We start by establishing what the tape has to prove about the player, then cut to that: the position-specific reads first, clean identification of the athlete on every clip, and a length that respects how these are actually watched — coaches scanning dozens of tapes, not sitting through a highlight reel.",
     results: [],
   },
   {
@@ -48,14 +51,15 @@ export const CASE_STUDIES: CaseStudy[] = [
     client: "[ADD CLIENT]",
     category: "Event Media Operations",
     year: "[YEAR]",
-    title: "One weekend of footage, a season of media.",
+    title: "One CrossFit event, a full recap package.",
     summary:
-      "Turning a single event's capture into a recap film, competitor highlights, sponsor deliverables and social cuts.",
+      "Turning a single CrossFit event's capture into a recap edit built for energy and pace, not just a highlight dump.",
     image: PLACEHOLDER_IMAGES.liveSet,
+    video: "https://res.cloudinary.com/fhboztke/video/upload/v1786992531/Nick_Crossfit_low_filesize.mp4",
     challenge:
-      "[ADD THE REAL BRIEF] — the event, its scale, what the organizer needed the media to do afterwards, and any sponsor obligations.",
+      "[ADD THE REAL BRIEF] — a CrossFit event recap that needed to capture the intensity of the competition floor and hold up as something athletes and sponsors would actually want to share.",
     solution:
-      "An event shouldn't end when the final whistle does. We plan the deliverable set before the footage lands, then work through it as one pass so the recap, the athlete cuts and the sponsor assets all come out of the same edit.",
+      "An event shouldn't end when the final rep does. We plan the deliverable before the footage lands, then cut for the energy of the room — pace, reps, crowd reaction — so the recap reads as an experience, not a highlight reel.",
     results: [],
   },
   {
@@ -63,13 +67,14 @@ export const CASE_STUDIES: CaseStudy[] = [
     client: "[ADD CLIENT]",
     category: "League & Team Media",
     year: "[YEAR]",
-    title: "Week twenty has to look like week one.",
-    summary: "Weekly match highlights, player cuts and scoreboard content produced across a full season.",
+    title: "A basketball mixtape built to travel.",
+    summary: "An athlete mixtape cut to the standard we hold every league and team deliverable to.",
     image: PLACEHOLDER_IMAGES.travel,
+    video: "https://youtube.com/shorts/OtIkn0FIfu0?feature=share",
     challenge:
-      "[ADD THE REAL BRIEF] — the league or club, the fixture volume, the turnaround expected between match and publish.",
+      "[ADD THE REAL BRIEF] — the league or club, the fixture volume, and the turnaround expected between game footage and a publishable cut.",
     solution:
-      "Season-long work is a systems problem, not an editing problem. We fix the templates, the naming and the review loop up front so the twentieth match is handled exactly like the first.",
+      "Season-long work is a systems problem, not an editing problem. We fix the templates, the naming and the review loop up front so a mixtape like this one is handled exactly the same whether it's the first week of the season or the twentieth.",
     results: [],
   },
   {
@@ -77,14 +82,15 @@ export const CASE_STUDIES: CaseStudy[] = [
     client: "[ADD CLIENT]",
     category: "Ongoing Media Partnerships",
     year: "[YEAR]",
-    title: "Becoming the media department.",
+    title: "A wrestling hype reel from a standing engagement.",
     summary:
-      "A standing engagement where the organization routes its media through us instead of re-briefing an editor each time.",
+      "One deliverable from an ongoing partnership — a wrestling event hype video cut for a client who routes their media through us instead of re-briefing an editor each time.",
     image: PLACEHOLDER_IMAGES.interview,
+    video: "https://youtu.be/bSB59r7525A",
     challenge:
-      "[ADD THE REAL BRIEF] — what the organization was doing before, and what kept breaking about it.",
+      "[ADD THE REAL BRIEF] — what the organization was doing before this partnership, and what kept breaking about it.",
     solution:
-      "Dedicated creative capacity on a monthly or seasonal basis, with one point of contact and a workflow that carries context between projects, so nothing has to be explained twice.",
+      "Dedicated creative capacity on a monthly or seasonal basis, with one point of contact and a workflow that carries context between projects — this hype reel is one of the deliverables that came out of that standing relationship.",
     results: [],
   },
 ];

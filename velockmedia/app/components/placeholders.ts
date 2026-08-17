@@ -25,10 +25,10 @@ export const PLACEHOLDER_IMAGES = {
     "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786861191/ChatGPT_Image_Aug_16_2026_11_49_38_AM_larj9h.png",
   kit: "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786861954/ChatGPT_Image_Aug_16_2026_12_02_19_PM_lkq7et.png",
   onLocation:
-    "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png",
-  fieldA: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90",
-  fieldB: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1300&q=90",
-  fieldC: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1300&q=90",
+    "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786992526/ChatGPT_Image_Aug_18_2026_12_18_37_AM_ftknxo.png",
+  fieldA: "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786994570/ChatGPT_Image_Aug_18_2026_12_52_43_AM_ekldr6.png",
+  fieldB: "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786994228/ChatGPT_Image_Aug_18_2026_12_46_46_AM_fwmc1d.png",
+  fieldC: "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786994447/ChatGPT_Image_Aug_18_2026_12_50_38_AM_i0mfjg.png",
 };
 
 export const PLACEHOLDER_HERO_VIDEO =

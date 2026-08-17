@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { PLACEHOLDER_IMAGES, PLACEHOLDER_HERO_VIDEO } from "./components/placeholders";
+import { resolveVideo } from "./components/video-utils";
 import {
   Menu,
   ArrowDownRight,
@@ -34,16 +35,11 @@ import VideoLightbox from "./components/VideoLightbox";
  * verified. Unverified values ship as bracketed placeholders ("[X]+").
  */
 
-// Icon paths for the footer social links. The platform name comes from the
-// CMS; the artwork lives here so editors never have to paste SVG.
+// Icon paths for the footer social links. Only the platforms actually linked
+// below need an entry here.
 const SOCIAL_PATHS: Record<string, string> = {
   Instagram:
     "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24s3.668-.014 4.948-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z",
-  YouTube:
-    "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z",
-  TikTok:
-    "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z",
-  X: "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.291 19.49h2.039L6.486 3.24H4.298l13.312 17.403z",
   LinkedIn:
     "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z",
 };
@@ -103,48 +99,42 @@ const SERVICES = [
   },
 ];
 
-// The pinned sideways-scrolling panels in the "Who we serve" section.
-// `video` takes priority when set; the slide falls back to `image` while it is
-// empty, so the section keeps rendering until real clips are dropped in.
-// [ADD SLIDE VIDEOS] — hosted .mp4 URLs.
-const AUDIENCE_SLIDES: {
-  caption: string;
-  alt: string;
-  image: string;
-  video?: string;
-}[] = [
-    {
-      caption: "Recruitment · athlete reels",
-      alt: "Recruitment and athlete showcase media",
-      image: PLACEHOLDER_IMAGES.goldenHour,
-      video: "",
-    },
-    {
-      caption: "Events · recap films",
-      alt: "Event media operations",
-      image: PLACEHOLDER_IMAGES.travel,
-      video: "",
-    },
-    {
-      caption: "Leagues · match highlights",
-      alt: "League and team media",
-      image: PLACEHOLDER_IMAGES.liveSet,
-      video: "",
-    },
-    {
-      caption: "Season-long · ongoing",
-      alt: "Ongoing media partnership",
-      image: PLACEHOLDER_IMAGES.interview,
-      video: "",
-    },
-    {
-      video:
-        "https://res.cloudinary.com/dpgp9aekd/video/upload/v1786857629/0_Woman_Girl_1280x720_ygoxox.mp4",
-      caption: "Portfolio Film",
-      alt: "Veloc portfolio video",
-      image: "",
-    },
-  ];
+// The pinned sideways-scrolling reels in the "See our work in motion"
+// gallery. `video` accepts either a YouTube URL (regular or Shorts) or a
+// direct hosted file — resolveVideo() in ./components/video-utils figures out
+// which. Add a new entry by copying one of these; order sets scroll order.
+const WORK_VIDEOS: { caption: string; alt: string; video: string }[] = [
+  {
+    caption: "BMX Event Highlight Reel",
+    alt: "BMX event highlight reel",
+    video: "https://youtube.com/shorts/xs4YR9nUxCw?feature=share",
+  },
+  {
+    caption: "Hoka Marathon Recap",
+    alt: "Hoka marathon recap hype edit",
+    video: "https://youtube.com/shorts/JfxxtEtF3DQ?feature=share",
+  },
+  {
+    caption: "Soccer Recruitment Tape",
+    alt: "Soccer recruitment tape",
+    video: "https://youtu.be/Pb99qRZGscU",
+  },
+  {
+    caption: "CrossFit Event Recap",
+    alt: "CrossFit event recap video",
+    video: "https://res.cloudinary.com/fhboztke/video/upload/v1786992531/Nick_Crossfit_low_filesize.mp4",
+  },
+  {
+    caption: "Wrestling Event Hype Video",
+    alt: "Wrestling event hype video",
+    video: "https://youtu.be/bSB59r7525A",
+  },
+  {
+    caption: "Basketball Athlete Mixtape",
+    alt: "Basketball athlete mixtape",
+    video: "https://youtube.com/shorts/OtIkn0FIfu0?feature=share",
+  },
+];
 
 const AUDIENCE_CHIPS = ["Recruitment programs", "Event organizers", "sports", "Ongoing partners"];
 
@@ -215,10 +205,70 @@ const PROCESS_PILLARS = [
   },
 ];
 
-// [ADD REAL TESTIMONIALS] — only verified client reviews belong here. While
-// this is empty the reviews section shows a visible placeholder instead of an
-// invented quote.
-const TESTIMONIALS: { quote: string; name: string; role: string; initials: string }[] = [];
+// Verified client reviews. Add a new one by copying an object below — quote,
+// name, role (what the project was) and initials for the avatar.
+const TESTIMONIALS: { quote: string; name: string; role: string; initials: string }[] = [
+  {
+    quote:
+      "Veloc listened and was able to execute the video to fit our needs. Definitely recommend for anyone that is interested in a recruiting video.",
+    name: "Sabrina D.",
+    role: "Soccer Recruitment Video",
+    initials: "SD",
+  },
+  {
+    quote:
+      "It was seamless working with Chris. He knows what he wants. A great client to work with. Looking forward to working together again!!",
+    name: "Chris P.",
+    role: "Basketball Athlete Season Highlights",
+    initials: "CP",
+  },
+  {
+    quote:
+      "I highly recommend hiring them for all of your video needs! They made an athlete highlight video for my son and we were so happy with it. They took videos that I had that weren't the best quality and made an amazing video. They are extremely talented and an excellent communicator. I look forward to hiring them again for future videos and am going to recommend him for friends and family. Do not hesitate... hire him!!",
+    name: "Elizabeth B.",
+    role: "Athlete Highlight Video",
+    initials: "EB",
+  },
+  {
+    quote:
+      "They were truly so kind and wonderful to work with. Professional, communicative, and incredibly helpful throughout the project. Followed instructions carefully, delivered exactly what I needed, and made the entire process feel smooth and stress-free. I really appreciated his responsiveness, positive attitude, and thoughtful approach. I'd absolutely work with them again and would gladly recommend to others.",
+    name: "Hannah L.",
+    role: "Game Footage Review",
+    initials: "HL",
+  },
+  {
+    quote: "Veloc perfectly captured the events emotions and energy into the content. Loved it!!",
+    name: "Nick R.",
+    role: "CrossFit Event Recap Highlight",
+    initials: "NR",
+  },
+  {
+    quote:
+      "Veloc was great to work with! I sent them a drive link with a ton of hockey video clips, some music and photos. They were able to navigate through all the files and put together a highly detailed recruiting profile video for my son. The quality exceeded my expectations and I will definitely hire Veloc again in the future for edits.",
+    name: "Liam D.",
+    role: "Hockey Recruitment Video",
+    initials: "LD",
+  },
+  {
+    quote: "Dope work! Will be working again in the future.",
+    name: "Sy M.",
+    role: "Basketball League Hype Reels",
+    initials: "SM",
+  },
+  {
+    quote:
+      "Veloc saw my vision and put it to life. Being a videographer, working with Veloc makes everything easier. I just shoot and they take care of everything else.",
+    name: "Clara B.",
+    role: "Media Operations for a Videographer",
+    initials: "CB",
+  },
+  {
+    quote: "Veloc was great to work with and delivered all deliverables on time and to a high standard.",
+    name: "Ash J.",
+    role: "Cinematic Wrestling Event Recaps & Hype Reels",
+    initials: "AJ",
+  },
+];
 
 const FAQS = [
   {
@@ -287,12 +337,9 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string | nu
   },
 ];
 
-// [ADD REAL SOCIAL URLS] — these point nowhere until real profiles exist.
 const SOCIALS = [
-  { platform: "Instagram", url: "#" },
-  { platform: "YouTube", url: "#" },
-  { platform: "X", url: "#" },
-  { platform: "LinkedIn", url: "#" },
+  { platform: "Instagram", url: "https://www.instagram.com/velocmedia?igsh=engyZnc5ZWFmcTI4&igsi=engyZnc5ZWFmcTI4" },
+  { platform: "LinkedIn", url: "https://www.linkedin.com/company/velocmedia" },
 ];
 
 export default function HomePage() {
@@ -1604,8 +1651,12 @@ export default function HomePage() {
                 id="hTrack"
                 className="flex w-max items-center gap-5 px-5 sm:gap-7 sm:px-[12vw]"
               >
-                {AUDIENCE_SLIDES.map((fig, i) => {
-                  const tall = i % 2 === 1;
+                {WORK_VIDEOS.map((fig, i) => {
+                  const video = resolveVideo(fig.video);
+                  const tall = video?.kind === "youtube" ? video.vertical : i % 2 === 1;
+                  const sizeClasses = tall
+                    ? "h-[56vh] sm:h-[32rem]"
+                    : "h-[46vh] sm:h-[26rem]";
 
                   return (
                     <figure
@@ -1613,30 +1664,25 @@ export default function HomePage() {
                       className={`group relative overflow-hidden rounded-2xl bg-black ${tall ? "w-[78vw] sm:w-[26rem]" : "w-[86vw] sm:w-[34rem]"
                         }`}
                     >
-                      {/* VIDEO (falls back to the still while no clip is set) */}
-                      {fig.video ? (
+                      {/* PREVIEW — direct files loop silently in the background;
+                          YouTube sources show their thumbnail until clicked, so
+                          we are not autoplaying multiple embedded iframes at once. */}
+                      {video?.kind === "file" ? (
                         <video
-                          src={fig.video}
+                          src={video.url}
                           autoPlay
                           muted
                           loop
                           playsInline
                           preload="metadata"
-                          className={`w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${tall
-                            ? "h-[56vh] sm:h-[32rem]"
-                            : "h-[46vh] sm:h-[26rem]"
-                            }`}
+                          className={`w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] ${sizeClasses}`}
                         />
                       ) : (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img
-                          data-parallax-img
-                          src={fig.image}
+                          src={video?.kind === "youtube" ? video.thumbnail : ""}
                           alt={fig.alt}
-                          className={`w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-[1.14] ${tall
-                            ? "h-[56vh] sm:h-[32rem]"
-                            : "h-[46vh] sm:h-[26rem]"
-                            }`}
+                          className={`w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-[1.14] ${sizeClasses}`}
                         />
                       )}
 
@@ -1645,20 +1691,18 @@ export default function HomePage() {
 
                       {/* CLICK TARGET — opens the full-screen player. Covers the whole
                   slide, and sits above the gradient so the whole card is
-                  clickable. Only rendered when there is a clip to play. */}
-                      {fig.video && (
-                        <button
-                          type="button"
-                          onClick={() => setActiveVideo({ src: fig.video!, caption: fig.caption })}
-                          data-cursor="Play"
-                          aria-label={`Play ${fig.caption}`}
-                          className="absolute inset-0 z-10 grid place-items-center focus:outline-none"
-                        >
-                          <span className="grid h-16 w-16 place-items-center rounded-full border border-white/40 bg-black/30 text-white backdrop-blur transition duration-500 group-hover:scale-110 group-hover:border-acid group-hover:bg-acid group-hover:text-ink">
-                            <Play className="ml-0.5 h-6 w-6" strokeWidth={1.5} />
-                          </span>
-                        </button>
-                      )}
+                  clickable. */}
+                      <button
+                        type="button"
+                        onClick={() => setActiveVideo({ src: fig.video, caption: fig.caption })}
+                        data-cursor="Play"
+                        aria-label={`Play ${fig.caption}`}
+                        className="absolute inset-0 z-10 grid place-items-center focus:outline-none"
+                      >
+                        <span className="grid h-16 w-16 place-items-center rounded-full border border-white/40 bg-black/30 text-white backdrop-blur transition duration-500 group-hover:scale-110 group-hover:border-acid group-hover:bg-acid group-hover:text-ink">
+                          <Play className="ml-0.5 h-6 w-6" strokeWidth={1.5} />
+                        </span>
+                      </button>
 
                       {/* CAPTION */}
                       <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between p-5">
@@ -1744,7 +1788,7 @@ export default function HomePage() {
                           data-parallax-img
                           src={item.image}
                           alt={item.alt}
-                          className="aspect-[4/3] w-full scale-110 object-cover transition-transform duration-[1.2s] group-hover:scale-[1.16]"
+                          className="aspect-[4/3] w-full scale-110 object-cover grayscale transition-all duration-[1.2s] group-hover:scale-[1.16] group-hover:grayscale-0"
                         />
                       ) : (
                         <div
@@ -1872,9 +1916,8 @@ export default function HomePage() {
           </div>
 
           {TESTIMONIALS.length > 0 ? (
-            <div className="mt-14 space-y-5">
-              <ReviewRow speed="-0.5" reviews={TESTIMONIALS.slice(0, 3)} />
-              {TESTIMONIALS.length > 3 && <ReviewRow speed="0.4" reviews={TESTIMONIALS.slice(3, 6)} />}
+            <div className="mt-14">
+              <ReviewRow speed="-0.5" reviews={TESTIMONIALS} />
             </div>
           ) : (
             /* Placeholder, not a quote. Add Testimonial documents in Sanity and

@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight, Star, Play } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import BookCallButton from "../components/BookCallButton";
@@ -16,15 +16,24 @@ import {
 } from "../../sanity/lib/queries";
 import type { SanityImageSource } from "@sanity/image-url";
 import { PackageOpen } from "lucide-react";
+import { resolveVideo } from "../components/video-utils";
 
 type Review = {
   quote: string;
   initials: string;
-  bg: string;
-  fg: string;
   name: string;
   role: string;
 };
+
+/** "Sabrina D." -> "SD" for the review avatar. */
+function initialsFor(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("");
+}
 
 function ReviewRow({
   speed,
@@ -63,9 +72,7 @@ function ReviewRow({
               </p>
 
               <footer className="mt-8 flex items-center gap-3 border-t border-neutral-100 pt-5">
-                <div
-                  className={`grid h-10 w-10 place-items-center rounded-full text-sm font-medium ${r.bg} ${r.fg}`}
-                >
+                <div className="grid h-10 w-10 place-items-center rounded-full bg-ink text-sm font-medium text-white">
                   {r.initials}
                 </div>
 
@@ -131,10 +138,62 @@ const FALLBACK_METRICS: Metric[] = [
   { label: "Upwork rating", value: "[X.X]" },
 ];
 
-// [ADD REAL TESTIMONIALS] — authored in Sanity (Testimonial documents). No
-// local fallback on purpose: an empty list shows a visible placeholder in the
-// reviews section rather than inventing a quote.
-const FALLBACK_TESTIMONIALS: Testimonial[] = [];
+// Verified client reviews. Add a new one by copying an object below — quote,
+// name and role (what the project was). These take priority over anything in
+// Sanity so they show reliably regardless of what's in the CMS dataset.
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
+  {
+    quote:
+      "Veloc listened and was able to execute the video to fit our needs. Definitely recommend for anyone that is interested in a recruiting video.",
+    name: "Sabrina D.",
+    role: "Soccer Recruitment Video",
+  },
+  {
+    quote:
+      "It was seamless working with Chris. He knows what he wants. A great client to work with. Looking forward to working together again!!",
+    name: "Chris P.",
+    role: "Basketball Athlete Season Highlights",
+  },
+  {
+    quote:
+      "I highly recommend hiring them for all of your video needs! They made an athlete highlight video for my son and we were so happy with it. They took videos that I had that weren't the best quality and made an amazing video. They are extremely talented and an excellent communicator. I look forward to hiring them again for future videos and am going to recommend him for friends and family. Do not hesitate... hire him!!",
+    name: "Elizabeth B.",
+    role: "Athlete Highlight Video",
+  },
+  {
+    quote:
+      "They were truly so kind and wonderful to work with. Professional, communicative, and incredibly helpful throughout the project. Followed instructions carefully, delivered exactly what I needed, and made the entire process feel smooth and stress-free. I really appreciated his responsiveness, positive attitude, and thoughtful approach. I'd absolutely work with them again and would gladly recommend to others.",
+    name: "Hannah L.",
+    role: "Game Footage Review",
+  },
+  {
+    quote: "Veloc perfectly captured the events emotions and energy into the content. Loved it!!",
+    name: "Nick R.",
+    role: "CrossFit Event Recap Highlight",
+  },
+  {
+    quote:
+      "Veloc was great to work with! I sent them a drive link with a ton of hockey video clips, some music and photos. They were able to navigate through all the files and put together a highly detailed recruiting profile video for my son. The quality exceeded my expectations and I will definitely hire Veloc again in the future for edits.",
+    name: "Liam D.",
+    role: "Hockey Recruitment Video",
+  },
+  {
+    quote: "Dope work! Will be working again in the future.",
+    name: "Sy M.",
+    role: "Basketball League Hype Reels",
+  },
+  {
+    quote:
+      "Veloc saw my vision and put it to life. Being a videographer, working with Veloc makes everything easier. I just shoot and they take care of everything else.",
+    name: "Clara B.",
+    role: "Media Operations for a Videographer",
+  },
+  {
+    quote: "Veloc was great to work with and delivered all deliverables on time and to a high standard.",
+    name: "Ash J.",
+    role: "Cinematic Wrestling Event Recaps & Hype Reels",
+  },
+];
 
 export default async function CaseStudiesPage() {
   const [
@@ -156,9 +215,11 @@ export default async function CaseStudiesPage() {
     : FALLBACK_CASE_STUDIES;
 
   const TESTIMONIALS =
-    fetchedTestimonials && fetchedTestimonials.length > 0
-      ? fetchedTestimonials
-      : FALLBACK_TESTIMONIALS;
+    FALLBACK_TESTIMONIALS.length > 0
+      ? FALLBACK_TESTIMONIALS
+      : fetchedTestimonials && fetchedTestimonials.length > 0
+        ? fetchedTestimonials
+        : [];
 
   const METRICS =
     pageContent?.metrics && pageContent.metrics.length > 0
@@ -198,7 +259,16 @@ export default async function CaseStudiesPage() {
         {/* ==================== CASE STUDIES ==================== */}
         <section className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <div className="grid gap-6 sm:grid-cols-2">
-            {CASE_STUDIES.map((cs) => (
+            {CASE_STUDIES.map((cs) => {
+              const video = resolveVideo(cs.video);
+              const cover =
+                video?.kind === "youtube"
+                  ? video.thumbnail
+                  : typeof cs.image === "string"
+                    ? cs.image
+                    : imageUrl(cs.image, 1200);
+
+              return (
               <Link
                 key={cs.slug}
                 href={`/case-studies/${cs.slug}`}
@@ -206,11 +276,7 @@ export default async function CaseStudiesPage() {
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                   <img
-                    src={
-                      typeof cs.image === "string"
-                        ? cs.image
-                        : imageUrl(cs.image, 1200)
-                    }
+                    src={cover}
                     alt={cs.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
@@ -218,6 +284,12 @@ export default async function CaseStudiesPage() {
                   <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-700 backdrop-blur">
                     {cs.category}
                   </span>
+
+                  {video && (
+                    <span className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur">
+                      <Play className="ml-0.5 h-4 w-4" strokeWidth={1.5} />
+                    </span>
+                  )}
                 </div>
 
                 <div className="p-6">
@@ -240,7 +312,8 @@ export default async function CaseStudiesPage() {
                   </p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -402,20 +475,14 @@ export default async function CaseStudiesPage() {
           </div>
 
           {TESTIMONIALS.length > 0 ? (
-            <div className="mt-14 space-y-5">
+            <div className="mt-14">
               <ReviewRow
                 speed="-0.5"
-                reviews={TESTIMONIALS.slice(0, 3).map((t, i) => ({
+                reviews={TESTIMONIALS.map((t) => ({
                   quote: t.quote,
                   name: t.name,
                   role: t.role || "",
-                  initials: t.name.slice(0, 2).toUpperCase(),
-                  bg: [
-                    "bg-neutral-200",
-                    "bg-neutral-200",
-                    "bg-neutral-200",
-                  ][i % 3],
-                  fg: "text-neutral-800",
+                  initials: initialsFor(t.name),
                 }))}
               />
             </div>

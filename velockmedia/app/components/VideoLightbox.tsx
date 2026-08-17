@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { X as XIcon } from "lucide-react";
+import { resolveVideo } from "./video-utils";
 
 type Props = {
-  /** Video URL. `null` closes the lightbox. */
+  /** Video URL — a YouTube link or a direct file. `null` closes the lightbox. */
   src: string | null;
   caption?: string;
   onClose: () => void;
@@ -13,12 +14,14 @@ type Props = {
 /**
  * Full-screen video player over a blurred backdrop.
  *
- * Opened from the pinned slide track on the homepage. The slide previews are
- * muted autoplay loops, so this pauses every other <video> on the page while it
- * is open — otherwise the loop underneath keeps running behind the blur.
+ * Opened from the pinned slide track on the homepage and from case study
+ * pages. YouTube links (including Shorts) render as an embedded iframe;
+ * direct files render as a native <video>. Muted background preview loops
+ * elsewhere on the page are paused while this is open.
  */
 export default function VideoLightbox({ src, caption, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const video = resolveVideo(src);
 
   useEffect(() => {
     if (!src) return;
@@ -32,7 +35,8 @@ export default function VideoLightbox({ src, caption, onClose }: Props) {
     document.body.style.overflow = "hidden";
 
     // Pause the background slide loops; remember which were actually playing
-    // so they can be resumed on close.
+    // so they can be resumed on close. Only native <video> loops are tracked
+    // — YouTube embeds behind the blur are left alone.
     const others = Array.from(document.querySelectorAll("video")).filter((v) => v !== videoRef.current);
     const wasPlaying = others.filter((v) => !v.paused);
     wasPlaying.forEach((v) => v.pause());
@@ -51,7 +55,9 @@ export default function VideoLightbox({ src, caption, onClose }: Props) {
     };
   }, [src, onClose]);
 
-  if (!src) return null;
+  if (!video) return null;
+
+  const vertical = video.kind === "youtube" && video.vertical;
 
   return (
     <div
@@ -75,15 +81,27 @@ export default function VideoLightbox({ src, caption, onClose }: Props) {
         <XIcon className="h-5 w-5" strokeWidth={1.5} />
       </button>
 
-      <div className="w-full max-w-5xl">
-        <video
-          ref={videoRef}
-          src={src}
-          controls
-          autoPlay
-          playsInline
-          className="max-h-[78vh] w-full rounded-2xl bg-black shadow-2xl"
-        />
+      <div className={vertical ? "w-full max-w-[420px]" : "w-full max-w-5xl"}>
+        {video.kind === "youtube" ? (
+          <div className={`overflow-hidden rounded-2xl bg-black shadow-2xl ${vertical ? "aspect-[9/16]" : "aspect-video"}`}>
+            <iframe
+              src={`${video.embedUrl}?autoplay=1&rel=0`}
+              title={caption || "Video"}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            src={video.url}
+            controls
+            autoPlay
+            playsInline
+            className="max-h-[78vh] w-full rounded-2xl bg-black shadow-2xl"
+          />
+        )}
         {caption && (
           <p className="font-display mt-5 text-center text-sm uppercase tracking-[0.18em] text-white/60">{caption}</p>
         )}

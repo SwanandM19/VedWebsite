@@ -10,6 +10,7 @@ import { sanityFetch } from "../../../sanity/lib/client";
 import { imageUrl } from "../../../sanity/lib/image";
 import { caseStudiesFullQuery } from "../../../sanity/lib/queries";
 import type { SanityImageSource } from "@sanity/image-url";
+import { resolveVideo } from "../../components/video-utils";
 
 type SanityCaseStudy = Omit<CaseStudy, "image"> & { image?: SanityImageSource };
 
@@ -41,6 +42,8 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
   // With a single published case study there is no "next" to link to.
   const next = caseStudies.length > 1 ? caseStudies[(index + 1) % caseStudies.length] : null;
   const image = typeof cs.image === "string" ? cs.image : imageUrl(cs.image, 1800);
+  const video = resolveVideo(cs.video);
+  const vertical = video?.kind === "youtube" && video.vertical;
 
   return (
     <div className="bg-white font-sans text-neutral-900 antialiased">
@@ -60,9 +63,25 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
         </section>
 
         <section className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
-          <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-100">
-            <img src={image} alt={cs.title} className="h-full w-full object-cover" />
-          </div>
+          {video ? (
+            <div className={`overflow-hidden rounded-2xl bg-black ${vertical ? "mx-auto aspect-[9/16] max-w-sm" : "aspect-[16/9]"}`}>
+              {video.kind === "youtube" ? (
+                <iframe
+                  src={`${video.embedUrl}?rel=0&modestbranding=1`}
+                  title={cs.title}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <video src={video.url} controls playsInline className="h-full w-full object-cover" />
+              )}
+            </div>
+          ) : (
+            <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-100">
+              <img src={image} alt={cs.title} className="h-full w-full object-cover" />
+            </div>
+          )}
         </section>
 
         <section className="mx-auto grid max-w-4xl gap-10 px-5 py-16 sm:px-8 md:grid-cols-2 lg:px-10">
