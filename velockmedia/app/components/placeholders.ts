@@ -20,10 +20,10 @@ export const PLACEHOLDER_IMAGES = {
   aperture:
     "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0b747a96-4f78-4e4e-8152-d26201955a6b_3840w.png",
   studioA:
-    "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0711a0c1-d01e-461b-a3a4-f1c870278629_3840w.png",
+    "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786860450/ChatGPT_Image_Aug_16_2026_11_37_17_AM_pd55hq.png",
   studioB:
-    "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/ee86ccc6-e7a9-4a81-a328-5c5894aa8e48_3840w.png",
-  kit: "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/7b477bfa-78bb-42fe-b3a1-d23ddac27768_3840w.png",
+    "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786861191/ChatGPT_Image_Aug_16_2026_11_49_38_AM_larj9h.png",
+  kit: "https://res.cloudinary.com/dpgp9aekd/image/upload/v1786861954/ChatGPT_Image_Aug_16_2026_12_02_19_PM_lkq7et.png",
   onLocation:
     "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/78066529-5e01-476f-b330-dfa9695454f7_3840w.png",
   fieldA: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1300&q=90",
@@ -32,4 +32,4 @@ export const PLACEHOLDER_IMAGES = {
 };
 
 export const PLACEHOLDER_HERO_VIDEO =
-  "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/generated-videos/5bd6211c-bd4c-467c-b442-4312cac4712c/1785163661816-ea1193e9-c971-46d9-8e1f-50c0e0ec6b27.mp4";
+  "https://res.cloudinary.com/dpgp9aekd/video/upload/v1786859563/Creating_short_video_from_photo_202608161122_gchftx.mp4";

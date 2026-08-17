@@ -56,7 +56,7 @@ export default function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 py-14 md:grid-cols-3 lg:gap-x-20">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="flex items-center gap-4 font-display text-[10px] uppercase tracking-[0.22em]">
+              <h3 className="flex items-center gap-4 font-display text-[13px] uppercase tracking-[0.18em]">
                 <span className="h-1 w-1 rounded-full bg-acid" />
                 {col.title}
               </h3>
@@ -79,7 +79,7 @@ export default function SiteFooter() {
 
         <div className="relative grid min-h-72 overflow-hidden pb-10 pt-6 lg:grid-cols-[0.9fr_1.5fr] lg:items-end">
           <div className="relative z-10 max-w-md">
-            <h2 className="font-display text-2xl leading-tight tracking-[-0.02em] sm:text-3xl">
+            <h2 className="font-display text-3xl leading-tight tracking-normal sm:text-4xl">
               Let&apos;s talk about your media.
             </h2>
             <p className="mt-4 text-base leading-7 text-white/55">
@@ -102,7 +102,7 @@ export default function SiteFooter() {
               <path d="M13 275C104 108 222 121 337 210C447 295 542 114 665 143C754 164 826 243 884 286" stroke="currentColor" strokeWidth={1} strokeDasharray="2 5" />
             </svg>
             <p
-              className="absolute inset-x-0 bottom-0 whitespace-nowrap text-center font-display text-8xl font-light leading-none tracking-[-0.04em] sm:text-9xl lg:text-[12rem]"
+              className="absolute inset-x-0 bottom-0 whitespace-nowrap text-center font-display text-7xl font-light leading-none tracking-normal sm:text-8xl lg:text-9xl"
               style={{ WebkitTextStroke: "1px rgba(255,255,255,.14)", color: "rgba(255,255,255,.06)" }}
             >
               VELOC

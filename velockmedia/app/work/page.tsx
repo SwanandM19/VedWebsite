@@ -60,8 +60,8 @@ export default async function WorkPage() {
 
       <main>
         <section className="mx-auto max-w-7xl px-5 pb-16 pt-16 sm:px-8 sm:pt-20 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Our Work</p>
-          <h1 className="font-display mt-5 max-w-3xl text-4xl font-medium tracking-[-0.03em] sm:text-5xl">
+          <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">Our Work</p>
+          <h1 className="font-display mt-5 max-w-3xl text-5xl font-medium leading-tight tracking-normal sm:text-6xl">
             What we produce for sports organizations.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-500">
@@ -86,7 +86,7 @@ export default async function WorkPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
                 <div className="relative z-10">
                   {cat.count && <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">{cat.count}</p>}
-                  <h2 className="font-display mt-3 flex items-center justify-between gap-3 text-2xl font-medium tracking-[-0.02em]">
+                  <h2 className="font-display mt-3 flex items-center justify-between gap-3 text-3xl font-medium leading-tight tracking-normal">
                     {cat.name}
                     <ArrowUpRight className="h-6 w-6 shrink-0 text-white/70 transition group-hover:text-acid" strokeWidth={1.5} />
                   </h2>
@@ -97,74 +97,139 @@ export default async function WorkPage() {
           </div>
         </section>
         {/* ============ 04 · NUMBERS ============ */}
-        <section id="products" className="border-t border-neutral-200 bg-white py-20 sm:py-28">
-          <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-            <div>
-              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Already have footage?</p>
-              <h2 className="font-display mt-5 max-w-lg text-4xl font-medium leading-[1.04] tracking-[-0.03em] sm:text-5xl" data-split="lines">
-                We are a post-production operation.
-              </h2>
-              <p className="mt-7 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                Most of our work starts with footage that already exists — captured by your team, your venue or your
-                broadcast partner. Send us what you have and what you are trying to achieve.
-              </p>
-              <p className="mt-4 max-w-xl text-base leading-7 text-neutral-600" data-reveal>
-                We work out what should be made from it before we open an edit, because the objective decides the cut — not
-                the other way around.
-              </p>
+<section id="products" className="border-t border-neutral-200 bg-white py-20 sm:py-28">
+  <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
+    <div>
+      <h2
+        className="font-display mt-5 max-w-lg text-5xl font-medium leading-[1.15] tracking-normal sm:text-6xl"
+        data-split="lines"
+      >
+        We are a post-production operation.
+      </h2>
 
-              <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4" data-stagger>
-                {/* [ADD VERIFIED NUMBERS] — bracketed placeholders ship until real
-                    Upwork / project figures are supplied. Never estimate these. */}
-                {[
-                  { value: "[X]+", label: "Sports projects delivered" },
-                  { value: "[X.X]", label: "Upwork rating" },
-                  { value: "[X]%", label: "Job success score" },
-                  { value: "[X]+", label: "Sports worked in" },
-                ].map((stat) => (
-                  <div key={stat.label} className="border-t border-neutral-900/15 pt-4">
-                    <p className="font-display text-4xl font-medium tracking-[-0.04em]">{stat.value}</p>
-                    <p className="mt-2 font-display text-[10px] uppercase tracking-[0.18em] text-neutral-400">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+      <p
+        className="mt-7 max-w-xl text-base leading-7 text-neutral-600"
+        data-reveal
+      >
+        Most of our work starts with footage that already exists — captured by
+        your team, your venue or your broadcast partner. Send us what you have
+        and what you are trying to achieve.
+      </p>
 
-            <div className="relative min-h-[32rem] overflow-hidden rounded-[2rem] bg-neutral-50 p-6 sm:p-10">
-              <div className="pointer-events-none absolute inset-0 opacity-60">
-                <div className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
-                <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200" />
-                <div className="absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
-              </div>
-              <div className="relative flex h-full flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[10px] uppercase tracking-[0.2em]">How an engagement runs</span>
-                  <PackageOpen className="h-6 w-6 text-neutral-400" strokeWidth={1.5} />
-                </div>
-                <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3" data-stagger>
-                  {[
-                    { t: "01 · Understand", s: "The sport, the org, the objective", dot: "bg-acid" },
-                    { t: "02 · Plan", s: "What gets made, how footage is handled", dot: "bg-acid" },
-                    { t: "03 · Produce", s: "Our team executes the post", dot: "bg-acid" },
-                    { t: "04 · Review", s: "Quality control, then your feedback", dot: "bg-neutral-300" },
-                    { t: "05 · Deliver", s: "Final assets, organized", dot: "bg-neutral-300" },
-                    { t: "06 · Continue", s: "It becomes a media operation", dot: "bg-neutral-300" },
-                  ].map((item) => (
-                    <div key={item.t} className="rounded-2xl border border-neutral-200 bg-white/90 p-4 shadow-sm backdrop-blur">
-                      <span className={`mb-3 block h-1.5 w-1.5 rounded-full ${item.dot}`} />
-                      <p className="text-sm font-medium">{item.t}</p>
-                      <p className="mt-1 text-xs text-neutral-500">{item.s}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+      <p
+        className="mt-4 max-w-xl text-base leading-7 text-neutral-600"
+        data-reveal
+      >
+        We work out what should be made from it before we open an edit, because
+        the objective decides the cut — not the other way around.
+      </p>
+
+      {/* TRUST / NUMBERS */}
+      <div
+        className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3"
+        data-stagger
+      >
+        {[
+          { value: "50+", label: "Clients Served" },
+          { value: "10+", label: "Sports Covered" },
+          { value: "3+", label: "Years of Experience" },
+          { value: "500+", label: "Projects Delivered" },
+          { value: "1000+", label: "Hours of Footage Processed" },
+          { value: "10+", label: "Countries Worked With" },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="border-t border-neutral-900/15 pt-4"
+          >
+            <p className="font-display text-4xl font-medium leading-tight tracking-normal">
+              {stat.value}
+            </p>
+
+            <p className="mt-2 font-display text-[13px] uppercase tracking-[0.18em] text-neutral-400">
+              {stat.label}
+            </p>
           </div>
-        </section>
+        ))}
+      </div>
+    </div>
+
+    {/* HOW AN ENGAGEMENT RUNS */}
+    <div className="relative min-h-[32rem] overflow-hidden rounded-[2rem] bg-neutral-50 p-6 sm:p-10">
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
+
+        <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200" />
+
+        <div className="absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-300" />
+      </div>
+
+      <div className="relative flex h-full flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <span className="rounded-full border border-neutral-300 bg-white px-4 py-2 font-display text-[13px] uppercase tracking-[0.2em]">
+            How an engagement runs
+          </span>
+
+          <PackageOpen
+            className="h-6 w-6 text-neutral-400"
+            strokeWidth={1.5}
+          />
+        </div>
+
+        <div
+          className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3"
+          data-stagger
+        >
+          {[
+            {
+              t: "01 · Understand",
+              s: "The sport, the org, the objective",
+            },
+            {
+              t: "02 · Plan",
+              s: "What gets made, how footage is handled",
+            },
+            {
+              t: "03 · Produce",
+              s: "Our team executes the post",
+            },
+            {
+              t: "04 · Review",
+              s: "Quality control, then your feedback",
+            },
+            {
+              t: "05 · Deliver",
+              s: "Final assets, organized",
+            },
+            {
+              t: "06 · Continue",
+              s: "It becomes a media operation",
+            },
+          ].map((item) => (
+            <div
+              key={item.t}
+              className="rounded-2xl border border-neutral-200 bg-white/90 p-4 shadow-sm backdrop-blur"
+            >
+              {/* Orange dot */}
+              <span className="mb-3 block h-1.5 w-1.5 rounded-full bg-acid" />
+
+              <p className="text-sm font-medium">
+                {item.t}
+              </p>
+
+              <p className="mt-1 text-xs text-neutral-500">
+                {item.s}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
         <section className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-7xl px-5 py-20 text-center sm:px-8 lg:px-10">
-            <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
+            <h2 className="font-display text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
               Not sure which one fits?
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">

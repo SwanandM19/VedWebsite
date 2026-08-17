@@ -118,7 +118,7 @@ export default function BookCallModal({ open, onClose }: Props) {
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-acid/15 text-acid">
               <CheckCircle2 className="h-7 w-7" strokeWidth={1.5} />
             </div>
-            <h2 className="font-display mt-5 text-2xl font-medium tracking-[-0.02em]">Request received</h2>
+            <h2 className="font-display mt-5 text-2xl font-medium tracking-normal">Request received</h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
               Thanks — we&apos;ll read it properly and come back to you to arrange a time.
             </p>
@@ -132,8 +132,8 @@ export default function BookCallModal({ open, onClose }: Props) {
           </div>
         ) : (
           <>
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Discovery call</p>
-            <h2 id="bookCallTitle" className="font-display mt-3 text-2xl font-medium tracking-[-0.02em]">
+            <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">Discovery call</p>
+            <h2 id="bookCallTitle" className="font-display mt-3 text-2xl font-medium tracking-normal">
               Let&apos;s talk about your media.
             </h2>
             <p className="mt-2 text-sm leading-6 text-white/55">

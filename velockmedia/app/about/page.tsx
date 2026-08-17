@@ -86,8 +86,8 @@ export default async function AboutPage() {
       <main>
         {/* Mission */}
         <section className="mx-auto max-w-4xl px-5 pb-16 pt-16 text-center sm:px-8 sm:pt-20 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">{missionEyebrow}</p>
-          <h1 className="font-display mx-auto mt-5 max-w-3xl text-4xl font-medium tracking-[-0.03em] sm:text-5xl">
+          <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">{missionEyebrow}</p>
+          <h1 className="font-display mx-auto mt-5 max-w-3xl text-5xl font-medium leading-tight tracking-normal sm:text-6xl">
             {missionHeading}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-neutral-500">{missionBody}</p>
@@ -95,8 +95,8 @@ export default async function AboutPage() {
 
         {/* Process */}
         <section id="process" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">How we think</p>
-          <h2 className="font-display mt-4 max-w-2xl text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
+          <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">How we think</p>
+          <h2 className="font-display mt-4 max-w-2xl text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
             Understand first. Execute flawlessly.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-500">
@@ -106,8 +106,8 @@ export default async function AboutPage() {
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {processSteps.map((step, i) => (
               <div key={step.title} className="rounded-2xl border border-neutral-200 p-6">
-                <span className="font-display text-sm text-neutral-300">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="font-display mt-4 text-lg font-medium tracking-[-0.01em]">{step.title}</h3>
+                <span className="font-display text-base text-neutral-300">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="font-display mt-4 text-2xl font-medium tracking-normal">{step.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-neutral-500">{step.copy}</p>
               </div>
             ))}
@@ -130,8 +130,8 @@ export default async function AboutPage() {
               )}
             </div>
             <div>
-              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">The founder</p>
-              <h2 className="font-display mt-4 text-3xl font-medium tracking-[-0.02em]">
+              <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">The founder</p>
+              <h2 className="font-display mt-4 text-4xl font-medium leading-tight tracking-normal">
                 {founderName}, {founderRole}
               </h2>
               <p className="mt-5 text-base leading-7 text-neutral-600">{founderBio}</p>
@@ -141,8 +141,8 @@ export default async function AboutPage() {
 
         {/* Principles */}
         <section id="principles" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-acid">Our standard</p>
-          <h2 className="font-display mt-4 max-w-2xl text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
+          <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">Our standard</p>
+          <h2 className="font-display mt-4 max-w-2xl text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
             What we hold ourselves to on every project.
           </h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -153,7 +153,7 @@ export default async function AboutPage() {
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-white">
                     <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </span>
-                  <h3 className="font-display mt-5 text-lg font-medium tracking-[-0.01em]">{p.title}</h3>
+                  <h3 className="font-display mt-5 text-2xl font-medium tracking-normal">{p.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-neutral-500">{p.copy}</p>
                 </div>
               );
@@ -164,7 +164,7 @@ export default async function AboutPage() {
         {/* CTA */}
         <section className="relative overflow-hidden bg-ink text-white">
           <div className="mx-auto max-w-7xl px-5 py-20 text-center sm:px-8 lg:px-10">
-            <h2 className="font-display text-3xl font-medium tracking-[-0.02em] sm:text-4xl">
+            <h2 className="font-display text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
               Let&apos;s talk about your media.
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-white/60">

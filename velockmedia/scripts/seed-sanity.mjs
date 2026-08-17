@@ -15,7 +15,6 @@
 // written so it is obvious in both the Studio and the live site.
 
 import { createClient } from "@sanity/client";
-import { buildLandingPage } from "./seed-landing.mjs";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
@@ -35,25 +34,6 @@ const client = createClient({
 async function upsert(doc) {
   console.log(`Upserting ${doc._type}: ${doc._id}`);
   await client.createOrReplace(doc);
-}
-
-const uploadedAssets = new Map();
-
-/**
- * Uploads a placeholder still once and reuses the asset afterwards, so the
- * Studio opens showing the images the site currently renders and an editor can
- * swap them one at a time instead of facing empty slots.
- */
-async function uploadImage(key, url) {
-  if (uploadedAssets.has(key)) return uploadedAssets.get(key);
-  console.log(`Uploading image: ${key}...`);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch ${key}: ${res.status}`);
-  const buffer = Buffer.from(await res.arrayBuffer());
-  const asset = await client.assets.upload("image", buffer, { filename: `${key}.jpg` });
-  const field = { _type: "image", asset: { _type: "reference", _ref: asset._id } };
-  uploadedAssets.set(key, field);
-  return field;
 }
 
 async function main() {
@@ -144,9 +124,8 @@ async function main() {
     ],
   });
 
-  // The landing page singleton — every editable string and image on the
-  // homepage. Seeded last because it uploads the imagery.
-  await upsert(await buildLandingPage(uploadImage));
+  // The landing page is hand-edited in app/page.tsx right now, so its
+  // singleton is not seeded. See scripts/seed-landing.mjs to re-enable.
 
   console.log("\nDone. Case studies and testimonials are deliberately NOT seeded —");
   console.log("add them in the Studio from real, client-approved material only.");

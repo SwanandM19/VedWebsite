@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
-import { Elms_Sans, Orbitron } from "next/font/google";
+import { Manrope, League_Gothic } from "next/font/google";
 import "./globals.css";
 import BookCallProvider from "./components/BookCallProvider";
 
-// Self-hosted by next/font (no requests to fonts.googleapis.com), with the
-// variable axes so every weight the design uses comes from one file.
-const elmsSans = Elms_Sans({
-  variable: "--font-elms-sans",
+// Self-hosted by next/font (no requests to fonts.googleapis.com).
+// Manrope carries body copy; League Gothic is the display face used by every
+// `font-display` heading and eyebrow.
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
   display: "swap",
 });
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
+// League Gothic ships a single weight (400) with a width axis.
+const leagueGothic = League_Gothic({
+  variable: "--font-league-gothic",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -52,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${elmsSans.variable} ${orbitron.variable} h-full antialiased`}
+      className={`${manrope.variable} ${leagueGothic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Only facts that are verifiably true of the company belong here. */}

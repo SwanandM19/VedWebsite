@@ -7,7 +7,6 @@ import { Menu, X as XIcon } from "lucide-react";
 import BookCallButton from "./BookCallButton";
 
 const NAV_LINKS = [
-  { label: "Work", href: "/work" },
   { label: "Case Studies", href: "/case-studies" },
   { label: "About", href: "/about" },
 ];
@@ -30,7 +29,7 @@ export default function SiteHeader() {
     <img
       src="/FinalLogo.png"
       alt="Veloc Media"
-      className="h-[38px] w-auto object-contain"
+      className="h-[46px] w-auto object-contain"
     />
   </Link>
 
@@ -45,7 +44,7 @@ export default function SiteHeader() {
         <Link
           key={link.href}
           href={link.href}
-          className={`rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition ${
+          className={`font-display rounded-full px-4 py-2 text-[18px] uppercase tracking-[0.14em] transition ${
             active
               ? "text-neutral-900"
               : "text-neutral-500 hover:text-neutral-900"
@@ -60,7 +59,7 @@ export default function SiteHeader() {
   {/* Right Side */}
   <div className="flex items-center gap-3">
     <BookCallButton
-      className="hidden overflow-hidden rounded-full bg-ink px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-acid hover:text-ink sm:inline-flex"
+      className="font-display hidden overflow-hidden rounded-full bg-ink px-5 py-2.5 text-[18px] uppercase tracking-[0.14em] text-white transition-colors hover:bg-acid hover:text-ink sm:inline-flex"
     >
       Book a call
     </BookCallButton>
@@ -96,14 +95,14 @@ export default function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-4 py-3 text-sm text-neutral-900 hover:bg-neutral-100"
+                className="font-display rounded-xl px-4 py-3 text-xl uppercase tracking-[0.1em] text-neutral-900 hover:bg-neutral-100"
               >
                 {link.label}
               </Link>
             ))}
             <BookCallButton
               onClick={() => setOpen(false)}
-              className="mt-3 rounded-xl bg-ink px-4 py-3 text-center text-sm font-medium text-white"
+              className="font-display mt-3 rounded-xl bg-ink px-4 py-3 text-center text-xl uppercase tracking-[0.1em] text-white"
             >
               Book a call
             </BookCallButton>

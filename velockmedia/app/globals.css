@@ -8,11 +8,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Elms Sans carries body copy; Orbitron is the display face used by every
-     `font-display` heading, eyebrow and stat on the site. Both are loaded and
-     self-hosted by next/font in app/layout.tsx. */
-  --font-sans: var(--font-elms-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-orbitron), var(--font-elms-sans), ui-sans-serif, sans-serif;
+  /* Manrope carries body copy; League Gothic is the display face used by every
+     `font-display` heading, eyebrow and stat. Both are loaded and self-hosted
+     by next/font in app/layout.tsx. */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-league-gothic), var(--font-manrope), ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --color-ink: #16181d;
