@@ -1,11 +1,11 @@
 
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Star, Play } from "lucide-react";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import BookCallButton from "../components/BookCallButton";
+import ReviewMarquee from "../components/ReviewMarquee";
 import { CASE_STUDIES as FALLBACK_CASE_STUDIES, type CaseStudy } from "./data";
 import { sanityFetch } from "../../sanity/lib/client";
 import { imageUrl } from "../../sanity/lib/image";
@@ -18,13 +18,6 @@ import type { SanityImageSource } from "@sanity/image-url";
 import { PackageOpen } from "lucide-react";
 import { resolveVideo } from "../components/video-utils";
 
-type Review = {
-  quote: string;
-  initials: string;
-  name: string;
-  role: string;
-};
-
 /** "Sabrina D." -> "SD" for the review avatar. */
 function initialsFor(name: string) {
   return name
@@ -33,62 +26,6 @@ function initialsFor(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() || "")
     .join("");
-}
-
-function ReviewRow({
-  speed,
-  reviews,
-}: {
-  speed: string;
-  reviews: Review[];
-}) {
-  const numericSpeed = parseFloat(speed) || 0.4;
-
-  const marqueeStyle = {
-    "--marquee-duration": `${Math.round(
-      38 + Math.abs(numericSpeed) * 10
-    )}s`,
-    "--marquee-direction": numericSpeed > 0 ? "reverse" : "normal",
-  } as CSSProperties;
-
-  return (
-    <div
-      className="marquee-loop edge-fade flex w-max will-change-transform"
-      style={marqueeStyle}
-    >
-      {[0, 1].map((pass) => (
-        <div
-          key={pass}
-          aria-hidden={pass === 1}
-          className="flex gap-5 pr-5"
-        >
-          {reviews.map((r) => (
-            <blockquote
-              key={r.name}
-              className="flex w-[86vw] flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm sm:w-[26rem]"
-            >
-              <p className="text-base leading-7 text-neutral-700">
-                &ldquo;{r.quote}&rdquo;
-              </p>
-
-              <footer className="mt-8 flex items-center gap-3 border-t border-neutral-100 pt-5">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-ink text-sm font-medium text-white">
-                  {r.initials}
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium">{r.name}</p>
-                  <p className="font-display text-[13px] uppercase tracking-[0.18em] text-neutral-400">
-                    {r.role}
-                  </p>
-                </div>
-              </footer>
-            </blockquote>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export const metadata: Metadata = {
@@ -476,7 +413,7 @@ export default async function CaseStudiesPage() {
 
           {TESTIMONIALS.length > 0 ? (
             <div className="mt-14">
-              <ReviewRow
+              <ReviewMarquee
                 speed="-0.5"
                 reviews={TESTIMONIALS.map((t) => ({
                   quote: t.quote,

@@ -947,8 +947,12 @@ export default function HomePage() {
         root!.querySelectorAll<HTMLElement>("[data-marquee]").forEach((track) => {
           const base = parseFloat(track.getAttribute("data-speed") || "0.4") || 0.4;
           const reactive = track.hasAttribute("data-velocity");
+          const draggable = track.hasAttribute("data-drag");
           let half = 0;
           let x = 0;
+          let dragging = false;
+          let dragStartX = 0;
+          let dragStartTrackX = 0;
 
           function measure() {
             half = track.scrollWidth / 2;
@@ -957,13 +961,47 @@ export default function HomePage() {
           window.addEventListener("resize", measure);
           if (base > 0) x = -half;
 
-          gsap.ticker.add((_time, deltaTime) => {
+          function wrap() {
             if (!half) return;
+            while (x <= -half) x += half;
+            while (x > 0) x -= half;
+          }
+
+          if (draggable) {
+            track.style.cursor = "grab";
+            track.style.touchAction = "pan-y";
+
+            track.addEventListener("pointerdown", (e: PointerEvent) => {
+              dragging = true;
+              dragStartX = e.clientX;
+              dragStartTrackX = x;
+              track.setPointerCapture(e.pointerId);
+              track.style.cursor = "grabbing";
+            });
+
+            track.addEventListener("pointermove", (e: PointerEvent) => {
+              if (!dragging) return;
+              x = dragStartTrackX + (e.clientX - dragStartX);
+              wrap();
+              track.style.transform = "translate3d(" + x + "px,0,0)";
+            });
+
+            const endDrag = (e: PointerEvent) => {
+              if (!dragging) return;
+              dragging = false;
+              track.style.cursor = "grab";
+              track.releasePointerCapture(e.pointerId);
+            };
+            track.addEventListener("pointerup", endDrag);
+            track.addEventListener("pointercancel", endDrag);
+          }
+
+          gsap.ticker.add((_time, deltaTime) => {
+            if (!half || dragging) return;
             const f = Math.min(deltaTime, 50) / 16.667;
             const boost = reactive ? Math.min(Math.abs(scrollVel) * 0.28, 22) * (base < 0 ? -1 : 1) : 0;
             x += (base + boost) * f;
-            if (x <= -half) x += half;
-            if (x >= 0 && base > 0) x -= half;
+            wrap();
             track.style.transform = "translate3d(" + x + "px,0,0)";
           });
         });
@@ -2204,7 +2242,7 @@ type Review = { quote: string; initials: string; name: string; role: string };
 
 function ReviewRow({ speed, reviews }: { speed: string; reviews: Review[] }) {
   return (
-    <div className="marquee edge-fade flex w-max will-change-transform" data-marquee data-speed={speed} data-velocity>
+    <div className="marquee edge-fade flex w-max will-change-transform select-none" data-marquee data-speed={speed} data-velocity data-drag>
       {[0, 1].map((pass) => (
         <div key={pass} aria-hidden={pass === 1} className="flex gap-5 pr-5">
           {reviews.map((r) => (
