@@ -224,14 +224,14 @@ const TESTIMONIALS: { quote: string; name: string; role: string; initials: strin
   },
   {
     quote:
-      "I highly recommend hiring them for all of your video needs! They made an athlete highlight video for my son and we were so happy with it. They took videos that I had that weren't the best quality and made an amazing video. They are extremely talented and an excellent communicator. I look forward to hiring them again for future videos and am going to recommend him for friends and family. Do not hesitate... hire him!!",
+      "I highly recommend hiring them for all your video needs. They took footage that wasn't the best quality and turned it into an amazing highlight video. Extremely talented and a great communicator — I'll be hiring them again.",
     name: "Elizabeth B.",
     role: "Athlete Highlight Video",
     initials: "EB",
   },
   {
     quote:
-      "They were truly so kind and wonderful to work with. Professional, communicative, and incredibly helpful throughout the project. Followed instructions carefully, delivered exactly what I needed, and made the entire process feel smooth and stress-free. I really appreciated his responsiveness, positive attitude, and thoughtful approach. I'd absolutely work with them again and would gladly recommend to others.",
+      "Truly wonderful to work with — professional, communicative, and helpful throughout. Delivered exactly what I needed and made the process smooth and stress-free. I'd absolutely work with them again.",
     name: "Hannah L.",
     role: "Game Footage Review",
     initials: "HL",
@@ -244,7 +244,7 @@ const TESTIMONIALS: { quote: string; name: string; role: string; initials: strin
   },
   {
     quote:
-      "Veloc was great to work with! I sent them a drive link with a ton of hockey video clips, some music and photos. They were able to navigate through all the files and put together a highly detailed recruiting profile video for my son. The quality exceeded my expectations and I will definitely hire Veloc again in the future for edits.",
+      "Veloc was great to work with! I sent over a ton of hockey clips, music and photos, and they put together a highly detailed recruiting profile video for my son. Quality exceeded my expectations — I'll definitely hire them again.",
     name: "Liam D.",
     role: "Hockey Recruitment Video",
     initials: "LD",
@@ -1349,8 +1349,7 @@ export default function HomePage() {
                 Media operations for sports organizations.
               </h1>
               <p className="mt-8 max-w-lg text-base leading-7 text-white/65 sm:text-lg" data-hero-el>
-                Professional media for events, leagues, teams and recruitment programs — delivered with the reliability
-                and sports understanding your organization deserves.
+                Professional post-production media services for events, leagues, teams and recruitment programs — delivered with the reliability and sports understanding your organization deserves.
               </p>
               <div className="mt-10 flex flex-wrap gap-3" data-hero-el>
                 <button
@@ -1935,43 +1934,122 @@ export default function HomePage() {
         </section>
 
         {/* ============ 10 · FAQ ============ */}
-        <section id="faq" className="relative overflow-hidden bg-neutral-100 py-20 sm:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-              <div className="lg:sticky lg:top-28 lg:self-start">
-                <p className="font-display text-[14px] uppercase tracking-[0.2em] text-neutral-400" data-reveal> Questions</p>
-                <h2 className="font-display mt-5 max-w-xl text-5xl font-medium leading-[1.15] tracking-normal sm:text-6xl" data-split="lines">
-                  What organizations usually ask us first.
-                </h2>
-                <p className="mt-6 max-w-lg text-base leading-7 text-neutral-600" data-reveal>
-                  Who we work with, what we produce, and how an engagement actually runs.
-                </p>
-                <button type="button" onClick={openBookCall} data-magnetic data-cursor="Ask" className="mt-9 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white" data-reveal>
-                  Ask us directly <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
-                </button>
-              </div>
+<section id="faq" className="relative overflow-hidden bg-neutral-100 py-20 sm:py-28">
+  <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+    <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <div className="lg:sticky lg:top-28 lg:self-start">
+        <p
+          className="font-display text-[14px] uppercase tracking-[0.2em] text-neutral-400"
+          data-reveal
+        >
+          Questions
+        </p>
 
-              <div ref={faqListRef} id="faqList" className="divide-y divide-neutral-300 border-y border-neutral-300">
-                {FAQS.map((item, i) => (
-                  <div key={item.q} className={`faq-item${i === 0 ? " is-open" : ""}`}>
-                    <button type="button" className="faq-head flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left sm:py-7" aria-expanded={i === 0}>
-                      <span className="font-display text-xl tracking-normal text-neutral-900 sm:text-2xl">{item.q}</span>
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-300 bg-white">
-                        <svg className="faq-plus h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
-                      </span>
-                    </button>
-                    <div className="faq-body" style={i === 0 ? { height: "auto" } : { height: 0 }}>
-                      <div className="max-w-2xl pb-7 pr-12 text-base leading-7 text-neutral-600">{item.a}</div>
-                    </div>
-                  </div>
-                ))}
+        <h2
+          className="font-display mt-5 max-w-xl text-5xl font-medium leading-[1.15] tracking-normal sm:text-6xl"
+          data-split="lines"
+        >
+          What organizations usually ask us first.
+        </h2>
+
+        <p
+          className="mt-6 max-w-lg text-base leading-7 text-neutral-600"
+          data-reveal
+        >
+          Who we work with, what we produce, and how an engagement actually runs.
+        </p>
+
+        <button
+          type="button"
+          onClick={openBookCall}
+          data-magnetic
+          data-cursor="Ask"
+          className="mt-9 inline-flex items-center gap-2 rounded-full bg-acid px-6 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-ink transition hover:bg-ink hover:text-white"
+          data-reveal
+        >
+          Ask us directly
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+        </button>
+      </div>
+
+      <div
+        ref={faqListRef}
+        id="faqList"
+        className="divide-y divide-neutral-300 border-y border-neutral-300"
+      >
+        {[
+          {
+            q: "What exactly does Veloc do?",
+            a: "Veloc is a sports media operations company. We work as an outsourced media partner for ambitious sports organizations, helping them turn their footage, events, and athletes into professional, consistent media. From individual projects to ongoing content operations, we handle the post-production and media execution around your objectives.",
+          },
+          {
+            q: "Can you work with footage our team has already captured?",
+            a: "Yes. That's our primary operating model. Your organization, event team, broadcast partner, photographer, or production crew can provide the footage. Veloc handles the media execution from there—organizing, editing, designing, finishing, and delivering the content your organization needs.",
+          },
+          {
+            q: "What sports do you work with?",
+            a: "We work across a wide range of sports, including boxing, MMA, baseball, football, basketball, athletics, and more. Our focus isn't on one particular sport. It's on understanding the context, pace, audience, and objectives behind each project.",
+          },
+          {
+            q: "Do you work with events as well as ongoing sports content?",
+            a: "Yes. We support individual events as well as recurring media operations. That can include event recaps, athlete highlights, promotional content, social media assets, game or match content, season-long media, and more. For organizations with ongoing needs, Veloc can operate as an extension of your internal team.",
+          },
+          {
+            q: "Can Veloc work directly with athletes?",
+            a: "Yes. We create athlete-focused media including recruitment videos, athlete showcases, performance highlights, and personal content. Whether you're an individual athlete, recruitment organization, team, or sports organization, we can build the media around the athlete's objective.",
+          },
+          {
+            q: "How does the remote workflow work?",
+            a: "Everything happens remotely. You provide the footage and relevant information through an agreed workflow. We organize the material, execute the required media, manage revisions and quality control, and deliver the finished assets digitally. This allows us to work with organizations across different countries, sports, and time zones without requiring an on-site production team.",
+          },
+          {
+            q: "How quickly can you deliver content?",
+            a: "Turnaround depends on the type, volume, complexity, and intended use of the content. Before beginning a project, we'll agree on the required deliverables and timeline so expectations are clear from the start. For recurring partners, we can establish workflows and delivery schedules around your organization's calendar.",
+          },
+          {
+            q: "How do we get started with Veloc?",
+            a: "Tell us about your organization, sport, event, athletes, or upcoming project and what you're trying to achieve. We'll learn about your requirements, recommend an appropriate workflow, and determine whether Veloc is the right fit.",
+          },
+        ].map((item, i) => (
+          <div key={item.q} className={`faq-item${i === 0 ? " is-open" : ""}`}>
+            <button
+              type="button"
+              className="faq-head flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left sm:py-7"
+              aria-expanded={i === 0}
+            >
+              <span className="font-display text-xl tracking-normal text-neutral-900 sm:text-2xl">
+                {item.q}
+              </span>
+
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-neutral-300 bg-white">
+                <svg
+                  className="faq-plus h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                >
+                  <path d="M5 12h14" />
+                  <path d="M12 5v14" />
+                </svg>
+              </span>
+            </button>
+
+            <div
+              className="faq-body"
+              style={i === 0 ? { height: "auto" } : { height: 0 }}
+            >
+              <div className="max-w-2xl pb-7 pr-12 text-base leading-7 text-neutral-600">
+                {item.a}
               </div>
             </div>
           </div>
-        </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
 
       </main>
 
@@ -2082,7 +2160,7 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h3 className="flex items-center gap-4 font-display text-[13px] uppercase tracking-[0.18em]">
+      <h3 className="flex items-center gap-4 font-display text-base uppercase tracking-[0.18em]">
         <span className="h-1 w-1 rounded-full bg-acid" />
         {title}
       </h3>

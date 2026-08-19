@@ -156,13 +156,13 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "I highly recommend hiring them for all of your video needs! They made an athlete highlight video for my son and we were so happy with it. They took videos that I had that weren't the best quality and made an amazing video. They are extremely talented and an excellent communicator. I look forward to hiring them again for future videos and am going to recommend him for friends and family. Do not hesitate... hire him!!",
+      "I highly recommend hiring them for all your video needs. They took footage that wasn't the best quality and turned it into an amazing highlight video. Extremely talented and a great communicator — I'll be hiring them again.",
     name: "Elizabeth B.",
     role: "Athlete Highlight Video",
   },
   {
     quote:
-      "They were truly so kind and wonderful to work with. Professional, communicative, and incredibly helpful throughout the project. Followed instructions carefully, delivered exactly what I needed, and made the entire process feel smooth and stress-free. I really appreciated his responsiveness, positive attitude, and thoughtful approach. I'd absolutely work with them again and would gladly recommend to others.",
+      "Truly wonderful to work with — professional, communicative, and helpful throughout. Delivered exactly what I needed and made the process smooth and stress-free. I'd absolutely work with them again.",
     name: "Hannah L.",
     role: "Game Footage Review",
   },
@@ -173,7 +173,7 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "Veloc was great to work with! I sent them a drive link with a ton of hockey video clips, some music and photos. They were able to navigate through all the files and put together a highly detailed recruiting profile video for my son. The quality exceeded my expectations and I will definitely hire Veloc again in the future for edits.",
+      "Veloc was great to work with! I sent over a ton of hockey clips, music and photos, and they put together a highly detailed recruiting profile video for my son. Quality exceeded my expectations — I'll definitely hire them again.",
     name: "Liam D.",
     role: "Hockey Recruitment Video",
   },

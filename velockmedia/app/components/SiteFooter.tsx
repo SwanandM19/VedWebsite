@@ -56,7 +56,7 @@ export default function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 py-14 md:grid-cols-3 lg:gap-x-20">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="flex items-center gap-4 font-display text-[13px] uppercase tracking-[0.18em]">
+              <h3 className="flex items-center gap-4 font-display text-base uppercase tracking-[0.18em]">
                 <span className="h-1 w-1 rounded-full bg-acid" />
                 {col.title}
               </h3>

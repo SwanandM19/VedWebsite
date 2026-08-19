@@ -94,25 +94,36 @@ export default async function AboutPage() {
         </section>
 
         {/* Process */}
-        <section id="process" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">How we think</p>
-          <h2 className="font-display mt-4 max-w-2xl text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
-            Understand first. Execute flawlessly.
-          </h2>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-500">
-            The same sequence runs behind every engagement, whether it is a single recruitment reel or a full season of
-            league content.
-          </p>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {processSteps.map((step, i) => (
-              <div key={step.title} className="rounded-2xl border border-neutral-200 p-6">
-                <span className="font-display text-base text-neutral-300">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="font-display mt-4 text-2xl font-medium tracking-normal">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-neutral-500">{step.copy}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+<section id="process" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
+  <p className="font-display text-[14px] uppercase tracking-[0.2em] text-acid">How we think</p>
+
+  <h2 className="font-display mt-4 max-w-2xl text-4xl font-medium leading-tight tracking-normal sm:text-5xl">
+    Understand first. Execute flawlessly.
+  </h2>
+
+  <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-500">
+    The same sequence runs behind every engagement, whether it is a single recruitment reel or a full season of
+    league content.
+  </p>
+
+  <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {processSteps.map((step, i) => (
+      <div key={step.title} className="rounded-2xl border border-neutral-200 p-6">
+        <span className="font-display text-base text-acid">
+          {String(i + 1).padStart(2, "0")}
+        </span>
+
+        <h3 className="font-display mt-4 text-2xl font-medium tracking-normal">
+          {step.title}
+        </h3>
+
+        <p className="mt-3 text-sm leading-6 text-neutral-500">
+          {step.copy}
+        </p>
+      </div>
+    ))}
+  </div>
+</section>
 
         {/* Founder */}
         <section id="founder" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 lg:px-10">
