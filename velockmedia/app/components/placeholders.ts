@@ -16,7 +16,7 @@ export const PLACEHOLDER_IMAGES = {
     "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/b739edad-d484-48c1-8cef-883153b95f4e_3840w.png",
   interview:
     "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0eca95bb-6ae2-4781-8e51-dc99c29cea24_3840w.png",
-  hero: "",
+  hero: "https://res.cloudinary.com/dpgp9aekd/video/upload/v1786859563/Creating_short_video_from_photo_202608161122_gchftx.mp4",
   aperture:
     "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/0b747a96-4f78-4e4e-8152-d26201955a6b_3840w.png",
   studioA:
