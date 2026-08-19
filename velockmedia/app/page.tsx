@@ -354,6 +354,8 @@ export default function HomePage() {
   const faqListRef = useRef<HTMLDivElement>(null);
   const preloaderRef = useRef<HTMLDivElement>(null);
   const plPanelRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+  const lenisRafRef = useRef<((time: number) => void) | null>(null);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -399,9 +401,12 @@ export default function HomePage() {
         smoothWheel: true,
         touchMultiplier: 1.6,
       });
+      lenisRef.current = lenis;
       lenis.on("scroll", ScrollTrigger.update);
       ScrollTrigger.addEventListener("refresh", () => lenis.resize());
-      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      const lenisRaf = (time: number) => lenis.raf(time * 1000);
+      lenisRafRef.current = lenisRaf;
+      gsap.ticker.add(lenisRaf);
       gsap.ticker.lagSmoothing(0);
       lenis.stop();
 
@@ -1243,7 +1248,13 @@ export default function HomePage() {
       });
     }, root);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      if (lenisRafRef.current) gsap.ticker.remove(lenisRafRef.current);
+      lenisRef.current?.destroy();
+      lenisRef.current = null;
+      lenisRafRef.current = null;
+    };
   }, []);
 
   return (
