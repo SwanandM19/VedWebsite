@@ -217,7 +217,7 @@ const TESTIMONIALS: { quote: string; name: string; role: string; initials: strin
   },
   {
     quote:
-      "It was seamless working with Chris. He knows what he wants. A great client to work with. Looking forward to working together again!!",
+      "It was seamless working with Veloc. He knows what he wants. A great client to work with. Looking forward to working together again!!",
     name: "Chris P.",
     role: "Basketball Athlete Season Highlights",
     initials: "CP",

@@ -87,7 +87,7 @@ const FALLBACK_TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "It was seamless working with Chris. He knows what he wants. A great client to work with. Looking forward to working together again!!",
+      "It was seamless working with Veloc. He knows what he wants. A great client to work with. Looking forward to working together again!!",
     name: "Chris P.",
     role: "Basketball Athlete Season Highlights",
   },
@@ -230,10 +230,7 @@ export default async function CaseStudiesPage() {
                 </div>
 
                 <div className="p-6">
-                  <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-neutral-400">
-                    <span>{cs.client}</span>
-                    <span>{cs.year}</span>
-                  </div>
+                  
 
                   <h2 className="font-display mt-3 flex items-start justify-between gap-3 text-3xl font-medium leading-tight tracking-normal">
                     {cs.title}
