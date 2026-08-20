@@ -41,7 +41,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: PLACEHOLDER_IMAGES.goldenHour,
     video: "https://youtu.be/Pb99qRZGscU",
     challenge:
-      "[ADD THE REAL BRIEF] — a soccer recruitment tape, cut from game footage the family already had, that needed to hold a coach's attention in the first few seconds and prove the player's ability without padding.",
+      " a soccer recruitment tape, cut from game footage the family already had, that needed to hold a coach's attention in the first few seconds and prove the player's ability without padding.",
     solution:
       "We start by establishing what the tape has to prove about the player, then cut to that: the position-specific reads first, clean identification of the athlete on every clip, and a length that respects how these are actually watched — coaches scanning dozens of tapes, not sitting through a highlight reel.",
     results: [],
@@ -57,7 +57,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: PLACEHOLDER_IMAGES.liveSet,
     video: "https://res.cloudinary.com/fhboztke/video/upload/v1786992531/Nick_Crossfit_low_filesize.mp4",
     challenge:
-      "[ADD THE REAL BRIEF] — a CrossFit event recap that needed to capture the intensity of the competition floor and hold up as something athletes and sponsors would actually want to share.",
+      " a CrossFit event recap that needed to capture the intensity of the competition floor and hold up as something athletes and sponsors would actually want to share.",
     solution:
       "An event shouldn't end when the final rep does. We plan the deliverable before the footage lands, then cut for the energy of the room — pace, reps, crowd reaction — so the recap reads as an experience, not a highlight reel.",
     results: [],
@@ -72,7 +72,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: PLACEHOLDER_IMAGES.travel,
     video: "https://youtube.com/shorts/OtIkn0FIfu0?feature=share",
     challenge:
-      "[ADD THE REAL BRIEF] — the league or club, the fixture volume, and the turnaround expected between game footage and a publishable cut.",
+      "the league or club, the fixture volume, and the turnaround expected between game footage and a publishable cut.",
     solution:
       "Season-long work is a systems problem, not an editing problem. We fix the templates, the naming and the review loop up front so a mixtape like this one is handled exactly the same whether it's the first week of the season or the twentieth.",
     results: [],
@@ -88,7 +88,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: PLACEHOLDER_IMAGES.interview,
     video: "https://youtu.be/bSB59r7525A",
     challenge:
-      "[ADD THE REAL BRIEF] — what the organization was doing before this partnership, and what kept breaking about it.",
+      " what the organization was doing before this partnership, and what kept breaking about it.",
     solution:
       "Dedicated creative capacity on a monthly or seasonal basis, with one point of contact and a workflow that carries context between projects — this hype reel is one of the deliverables that came out of that standing relationship.",
     results: [],
